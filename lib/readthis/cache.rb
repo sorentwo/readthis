@@ -1,6 +1,5 @@
 # silence
 # mute
-# read_multi
 # fetch_multi
 #
 # delete_matched

@@ -1,6 +1,7 @@
 # Readthis
 
-TODO: Write a gem description
+An ActiveSupport::Cache compatible redis based cache focused on speed and
+lacking any dependencies beyond redis.
 
 ## Installation
 
@@ -9,18 +10,6 @@ Add this line to your application's Gemfile:
 ```ruby
 gem 'readthis'
 ```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install readthis
-
-## Usage
-
-TODO: Write usage instructions here
 
 ## Contributing
 

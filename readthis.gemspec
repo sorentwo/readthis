@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Readthis::VERSION
   spec.authors       = ['Parker Selbert']
   spec.email         = ['parker@sorentwo.com']
-  spec.summary       = 'Performant active support caching with redis'
-  spec.description   = 'Performant active support caching with redis'
+  spec.summary       = 'Performant active support compliant caching with redis'
+  spec.description   = 'Performant active support compliant caching with redis'
   spec.homepage      = 'https://github.com/sorentwo/readthis'
   spec.license       = 'MIT'
 
@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(spec)/})
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'redis'
+  spec.add_dependency 'redis', '~> 3.0'
 
   spec.add_development_dependency 'bundler', '~> 1.7'
   spec.add_development_dependency 'rake',    '~> 10.0'
