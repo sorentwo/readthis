@@ -1,13 +1,13 @@
 require 'readthis/cache'
 
 RSpec.describe Readthis::Cache do
+  let(:cache) { Readthis::Cache.new }
+
+  after do
+    cache.clear
+  end
+
   describe '#write' do
-    let(:cache) { Readthis::Cache.new }
-
-    after do
-      cache.clear
-    end
-
     it 'stores strings in the cache' do
       cache.write('some-key', 'some-value')
 
@@ -31,12 +31,6 @@ RSpec.describe Readthis::Cache do
   end
 
   describe '#fetch' do
-    let(:cache) { Readthis::Cache.new }
-
-    after do
-      cache.clear
-    end
-
     it 'gets an existing value' do
       cache.write('great-key', 'great')
       expect(cache.fetch('great-key')).to eq('great')
@@ -50,6 +44,41 @@ RSpec.describe Readthis::Cache do
 
     it 'does not set for a missing key without a block' do
       expect(cache.fetch('missing-key')).to be_nil
+    end
+  end
+
+  describe '#read_multi' do
+    it 'maps multiple values to keys' do
+      cache.write('a', 1)
+      cache.write('b', 2)
+      cache.write('c', 3)
+
+      expect(cache.read_multi('a', 'b', 'c')).to eq(
+        'a' => '1',
+        'b' => '2',
+        'c' => '3',
+      )
+    end
+
+    it 'respects namespacing' do
+      cache.write('d', 1, namespace: 'cache')
+      cache.write('e', 2, namespace: 'cache')
+
+      expect(cache.read_multi('d', 'e', namespace: 'cache')).to eq(
+        'd' => '1',
+        'e' => '2',
+      )
+    end
+  end
+
+  describe '#exist?' do
+    it 'is true when the key has been set' do
+      cache.write('existing-key', 'stuff')
+      expect(cache.exist?('existing-key')).to be_truthy
+    end
+
+    it 'is false when the key has not been set' do
+      expect(cache.exist?('random-key')).to be_falsey
     end
   end
 end
