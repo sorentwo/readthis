@@ -1,6 +1,5 @@
 # silence
 # mute
-# fetch
 # read_multi
 # fetch_multi
 #
@@ -8,7 +7,6 @@
 # increment
 # decrement
 # cleanup
-# clear
 #
 # read_entry
 # write_entry
@@ -39,6 +37,21 @@ module Readthis
       namespaced = namespaced_key(key, options)
 
       store.get(namespaced)
+    end
+
+    def fetch(key, options = {})
+      value = read(key, options)
+
+      if value.nil? && block_given?
+        value = yield
+        write(key, value, options)
+      end
+
+      value
+    end
+
+    def clear
+      store.flushall
     end
 
     private
