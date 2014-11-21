@@ -2,11 +2,6 @@
 # mute
 # fetch_multi
 #
-# delete_matched
-# increment
-# decrement
-# cleanup
-#
 # read_entry
 # write_entry
 # delete_entry
@@ -17,24 +12,22 @@ module Readthis
   class Cache
     attr_reader :store
 
-    def initialize
-      @store = Redis.new(url: 'redis://localhost:6379/11')
-    end
-
-    def write(key, object, options = {})
-      namespaced = namespaced_key(key, options)
-
-      store.set(namespaced, object)
-
-      if expiration = options[:expires_in]
-        store.expire(namespaced, expiration)
-      end
+    # Creates a new Readthis::Cache object with the given redis URL. The URL
+    # is parsed by the redis client directly.
+    def initialize(url: )
+      @store = Redis.new(url: url)
     end
 
     def read(key, options = {})
-      namespaced = namespaced_key(key, options)
+      read_entry(key, options)
+    end
 
-      store.get(namespaced)
+    def write(key, value, options = {})
+      write_entry(key, value, options)
+    end
+
+    def delete(key, options = {})
+      delete_entry(key, options)
     end
 
     def fetch(key, options = {})
@@ -46,6 +39,14 @@ module Readthis
       end
 
       value
+    end
+
+    def increment(key, options = {})
+      store.incr(namespaced_key(key, options))
+    end
+
+    def decrement(key, options = {})
+      store.decr(namespaced_key(key, options))
     end
 
     def read_multi(*keys)
@@ -64,6 +65,30 @@ module Readthis
 
     def clear
       store.flushall
+    end
+
+    # Supported for compatiblity, is simply a no-op
+    def cleanup
+    end
+
+    protected
+
+    def read_entry(key, options)
+      store.get(namespaced_key(key, options))
+    end
+
+    def write_entry(key, value, options)
+      namespaced = namespaced_key(key, options)
+
+      store.set(namespaced, value)
+
+      if expiration = options[:expires_in]
+        store.expire(namespaced, expiration)
+      end
+    end
+
+    def delete_entry(key, options)
+      store.del(namespaced_key(key, options))
     end
 
     private

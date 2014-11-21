@@ -1,7 +1,7 @@
 require 'readthis/cache'
 
 RSpec.describe Readthis::Cache do
-  let(:cache) { Readthis::Cache.new }
+  let(:cache) { Readthis::Cache.new(url: 'redis://localhost:6379/11') }
 
   after do
     cache.clear
@@ -79,6 +79,38 @@ RSpec.describe Readthis::Cache do
 
     it 'is false when the key has not been set' do
       expect(cache.exist?('random-key')).to be_falsey
+    end
+  end
+
+  describe '#delete' do
+    it 'deletes an existing key' do
+      cache.write('not-long', 'for this world')
+      cache.delete('not-long')
+
+      expect(cache.read('not-long')).to be_nil
+    end
+  end
+
+  describe '#increment' do
+    it 'atomically increases the stored integer' do
+      cache.write('counter', 10)
+      expect(cache.increment('counter')).to eq(11)
+      expect(cache.read('counter')).to eq('11')
+    end
+
+    it 'defaults a missing key to 1' do
+      expect(cache.increment('unknown')).to eq(1)
+    end
+  end
+
+  describe '#decrement' do
+    it 'decrements a stored integer' do
+      cache.write('counter', 20)
+      expect(cache.decrement('counter')).to eq(19)
+    end
+
+    it 'defaults a missing key to -1' do
+      expect(cache.decrement('unknown')).to eq(-1)
     end
   end
 end
