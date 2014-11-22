@@ -1,21 +1,19 @@
 # silence
 # mute
 # fetch_multi
-#
-# read_entry
-# write_entry
-# delete_entry
 
 require 'redis'
 
 module Readthis
   class Cache
-    attr_reader :store
+    attr_reader :expires_in, :namespace, :store
 
     # Creates a new Readthis::Cache object with the given redis URL. The URL
     # is parsed by the redis client directly.
-    def initialize(url: )
-      @store = Redis.new(url: url)
+    def initialize(url: , expires_in: nil, namespace: nil)
+      @store      = Redis.new(url: url)
+      @expires_in = expires_in
+      @namespace  = namespace
     end
 
     def read(key, options = {})
@@ -42,15 +40,15 @@ module Readthis
     end
 
     def increment(key, options = {})
-      store.incr(namespaced_key(key, options))
+      store.incr(namespaced_key(key, merged_options(options)))
     end
 
     def decrement(key, options = {})
-      store.decr(namespaced_key(key, options))
+      store.decr(namespaced_key(key, merged_options(options)))
     end
 
     def read_multi(*keys)
-      options = extract_options!(keys)
+      options = merged_options(extract_options!(keys))
 
       results = store.pipelined do
         keys.each { |key| store.get(namespaced_key(key, options)) }
@@ -60,7 +58,7 @@ module Readthis
     end
 
     def exist?(key, options = {})
-      store.exists(namespaced_key(key, options))
+      store.exists(namespaced_key(key, merged_options(options)))
     end
 
     def clear
@@ -74,10 +72,11 @@ module Readthis
     protected
 
     def read_entry(key, options)
-      store.get(namespaced_key(key, options))
+      store.get(namespaced_key(key, merged_options(options)))
     end
 
     def write_entry(key, value, options)
+      options    = merged_options(options)
       namespaced = namespaced_key(key, options)
 
       store.set(namespaced, value)
@@ -88,13 +87,19 @@ module Readthis
     end
 
     def delete_entry(key, options)
-      store.del(namespaced_key(key, options))
+      store.del(namespaced_key(key, merged_options(options)))
     end
 
     private
 
     def extract_options!(array)
       array.last.is_a?(Hash) ? array.pop : {}
+    end
+
+    def merged_options(options)
+      options[:namespace]  ||= namespace
+      options[:expires_in] ||= expires_in
+      options
     end
 
     def namespaced_key(key, options)

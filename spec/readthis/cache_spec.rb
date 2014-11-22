@@ -1,10 +1,25 @@
 require 'readthis/cache'
 
 RSpec.describe Readthis::Cache do
-  let(:cache) { Readthis::Cache.new(url: 'redis://localhost:6379/11') }
+  let(:url)   { 'redis://localhost:6379/11' }
+  let(:cache) { Readthis::Cache.new(url: url) }
 
   after do
     cache.clear
+  end
+
+  describe '#initialize' do
+    it 'accepts and persists a namespace' do
+      cache = Readthis::Cache.new(url: url, namespace: 'kash')
+
+      expect(cache.namespace).to eq('kash')
+    end
+
+    it 'accepts and persists an expiration' do
+      cache = Readthis::Cache.new(url: url, expires_in: 10)
+
+      expect(cache.expires_in).to eq(10)
+    end
   end
 
   describe '#write' do
@@ -45,6 +60,8 @@ RSpec.describe Readthis::Cache do
     it 'does not set for a missing key without a block' do
       expect(cache.fetch('missing-key')).to be_nil
     end
+
+    it 'forces a cache miss when `force` is passed'
   end
 
   describe '#read_multi' do
