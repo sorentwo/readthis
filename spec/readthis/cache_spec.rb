@@ -61,7 +61,12 @@ RSpec.describe Readthis::Cache do
       expect(cache.fetch('missing-key')).to be_nil
     end
 
-    it 'forces a cache miss when `force` is passed'
+    it 'forces a cache miss when `force` is passed' do
+      cache.write('short-key', 'stuff')
+      cache.fetch('short-key', force: true) { 'other stuff' }
+
+      expect(cache.read('short-key')).to eq('other stuff')
+    end
   end
 
   describe '#read_multi' do

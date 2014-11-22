@@ -29,7 +29,7 @@ module Readthis
     end
 
     def fetch(key, options = {})
-      value = read(key, options)
+      value = read(key, options) unless options[:force]
 
       if value.nil? && block_given?
         value = yield
