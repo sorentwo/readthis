@@ -81,7 +81,7 @@ module Readthis
     end
 
     def clear
-      store.flushall
+      store.flushdb
     end
 
     # Supported for compatiblity, is simply a no-op
