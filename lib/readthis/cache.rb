@@ -27,10 +27,10 @@ module Readthis
       namespaced = namespaced_key(key, options)
 
       with do |store|
-        store.set(namespaced, value)
-
         if expiration = options[:expires_in]
-          store.expire(namespaced, expiration)
+          store.setex(namespaced, expiration, value)
+        else
+          store.set(namespaced, value)
         end
       end
     end
@@ -45,7 +45,7 @@ module Readthis
       value = read(key, options) unless options[:force]
 
       if value.nil? && block_given?
-        value = yield
+        value = yield(key)
         write(key, value, options)
       end
 
