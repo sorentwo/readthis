@@ -1,19 +1,16 @@
-# silence
-# mute
-# fetch_multi
-
 require 'redis'
+require 'connection_pool'
 
 module Readthis
   class Cache
-    attr_reader :expires_in, :namespace, :store
+    attr_reader :expires_in, :namespace, :pool
 
     # Creates a new Readthis::Cache object with the given redis URL. The URL
     # is parsed by the redis client directly.
     def initialize(url: , expires_in: nil, namespace: nil)
-      @store      = Redis.new(url: url)
       @expires_in = expires_in
       @namespace  = namespace
+      @pool       = ConnectionPool.new { Redis.new(url: url) }
     end
 
     def read(key, options = {})
@@ -40,18 +37,25 @@ module Readthis
     end
 
     def increment(key, options = {})
-      store.incr(namespaced_key(key, merged_options(options)))
+      with do |store|
+        store.incr(namespaced_key(key, merged_options(options)))
+      end
     end
 
     def decrement(key, options = {})
-      store.decr(namespaced_key(key, merged_options(options)))
+      with do |store|
+        store.decr(namespaced_key(key, merged_options(options)))
+      end
     end
 
     def read_multi(*keys)
       options = merged_options(extract_options!(keys))
+      results = []
 
-      results = store.pipelined do
-        keys.each { |key| store.get(namespaced_key(key, options)) }
+      with do |store|
+        results = store.pipelined do
+          keys.each { |key| store.get(namespaced_key(key, options)) }
+        end
       end
 
       keys.zip(results).to_h
@@ -63,12 +67,14 @@ module Readthis
       results = read_multi(*keys)
       options = merged_options(extract_options!(keys))
 
-      store.pipelined do
-        results.each do |key, value|
-          if value.nil?
-            value = yield key
-            write_entry(key, value, options)
-            results[key] = value
+      with do |store|
+        store.pipelined do
+          results.each do |key, value|
+            if value.nil?
+              value = yield key
+              write_entry(key, value, options)
+              results[key] = value
+            end
           end
         end
       end
@@ -77,39 +83,49 @@ module Readthis
     end
 
     def exist?(key, options = {})
-      store.exists(namespaced_key(key, merged_options(options)))
+      with do |store|
+        store.exists(namespaced_key(key, merged_options(options)))
+      end
     end
 
     def clear
-      store.flushdb
-    end
-
-    # Supported for compatiblity, is simply a no-op
-    def cleanup
+      with do |store|
+        store.flushdb
+      end
     end
 
     protected
 
     def read_entry(key, options)
-      store.get(namespaced_key(key, merged_options(options)))
+      with do |store|
+        store.get(namespaced_key(key, merged_options(options)))
+      end
     end
 
     def write_entry(key, value, options)
       options    = merged_options(options)
       namespaced = namespaced_key(key, options)
 
-      store.set(namespaced, value)
+      with do |store|
+        store.set(namespaced, value)
 
-      if expiration = options[:expires_in]
-        store.expire(namespaced, expiration)
+        if expiration = options[:expires_in]
+          store.expire(namespaced, expiration)
+        end
       end
     end
 
     def delete_entry(key, options)
-      store.del(namespaced_key(key, merged_options(options)))
+      with do |store|
+        store.del(namespaced_key(key, merged_options(options)))
+      end
     end
 
     private
+
+    def with(&block)
+      pool.with(&block)
+    end
 
     def extract_options!(array)
       array.last.is_a?(Hash) ? array.pop : {}
