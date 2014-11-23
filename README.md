@@ -1,3 +1,6 @@
+[![Gem Version](https://badge.fury.io/rb/readthis.svg)](http://badge.fury.io/rb/readthis)
+[![Build Status](https://travis-ci.org/sorentwo/readthis.svg?branch=master)](https://travis-ci.org/sorentwo/readthis)
+
 # Readthis
 
 An ActiveSupport::Cache compatible redis based cache focused on speed,
