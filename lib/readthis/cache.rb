@@ -7,6 +7,8 @@ module Readthis
 
     # Creates a new Readthis::Cache object with the given redis URL. The URL
     # is parsed by the redis client directly.
+    #
+    #   Readthis::Cache.new('redis://localhost:6379/0', namespace: 'cache')
     def initialize(url, options = {})
       @expires_in = options.fetch(:expires_in, nil)
       @namespace  = options.fetch(:namespace, nil)
