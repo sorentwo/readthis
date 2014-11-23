@@ -57,6 +57,25 @@ module Readthis
       keys.zip(results).to_h
     end
 
+    # This must be done in two separate blocks. Redis pipelines return
+    # futures, which can not be resolved until the pipeline has exited.
+    def fetch_multi(*keys)
+      results = read_multi(*keys)
+      options = merged_options(extract_options!(keys))
+
+      store.pipelined do
+        results.each do |key, value|
+          if value.nil?
+            value = yield key
+            write_entry(key, value, options)
+            results[key] = value
+          end
+        end
+      end
+
+      results
+    end
+
     def exist?(key, options = {})
       store.exists(namespaced_key(key, merged_options(options)))
     end

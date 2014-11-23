@@ -40,7 +40,7 @@ RSpec.describe Readthis::Cache do
       cache.write('some-key', 'some-value', expires_in: 1)
 
       expect(cache.read('some-key')).not_to be_nil
-      sleep 1.1
+      sleep 1.01
       expect(cache.read('some-key')).to be_nil
     end
   end
@@ -89,6 +89,21 @@ RSpec.describe Readthis::Cache do
       expect(cache.read_multi('d', 'e', namespace: 'cache')).to eq(
         'd' => '1',
         'e' => '2',
+      )
+    end
+  end
+
+  describe '#fetch_multi' do
+    it 'reads multiple values, filling in missing keys from a block' do
+      cache.write('a', 1)
+      cache.write('c', 3)
+
+      results = cache.fetch_multi('a', 'b', 'c') { |key| key + key }
+
+      expect(results).to eq(
+        'a' => '1',
+        'b' => 'bb',
+        'c' => '3',
       )
     end
   end
