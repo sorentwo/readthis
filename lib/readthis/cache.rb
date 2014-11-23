@@ -7,22 +7,38 @@ module Readthis
 
     # Creates a new Readthis::Cache object with the given redis URL. The URL
     # is parsed by the redis client directly.
-    def initialize(url: , expires_in: nil, namespace: nil)
-      @expires_in = expires_in
-      @namespace  = namespace
-      @pool       = ConnectionPool.new { Redis.new(url: url) }
+    def initialize(url, options = {})
+      @expires_in = options.fetch(:expires_in, nil)
+      @namespace  = options.fetch(:namespace, nil)
+
+      @pool = ConnectionPool.new(pool_options(options)) do
+        Redis.new(url: url)
+      end
     end
 
     def read(key, options = {})
-      read_entry(key, options)
+      with do |store|
+        store.get(namespaced_key(key, merged_options(options)))
+      end
     end
 
     def write(key, value, options = {})
-      write_entry(key, value, options)
+      options    = merged_options(options)
+      namespaced = namespaced_key(key, options)
+
+      with do |store|
+        store.set(namespaced, value)
+
+        if expiration = options[:expires_in]
+          store.expire(namespaced, expiration)
+        end
+      end
     end
 
     def delete(key, options = {})
-      delete_entry(key, options)
+      with do |store|
+        store.del(namespaced_key(key, merged_options(options)))
+      end
     end
 
     def fetch(key, options = {})
@@ -72,7 +88,7 @@ module Readthis
           results.each do |key, value|
             if value.nil?
               value = yield key
-              write_entry(key, value, options)
+              write(key, value, options)
               results[key] = value
             end
           end
@@ -94,33 +110,6 @@ module Readthis
       end
     end
 
-    protected
-
-    def read_entry(key, options)
-      with do |store|
-        store.get(namespaced_key(key, merged_options(options)))
-      end
-    end
-
-    def write_entry(key, value, options)
-      options    = merged_options(options)
-      namespaced = namespaced_key(key, options)
-
-      with do |store|
-        store.set(namespaced, value)
-
-        if expiration = options[:expires_in]
-          store.expire(namespaced, expiration)
-        end
-      end
-    end
-
-    def delete_entry(key, options)
-      with do |store|
-        store.del(namespaced_key(key, merged_options(options)))
-      end
-    end
-
     private
 
     def with(&block)
@@ -135,6 +124,11 @@ module Readthis
       options[:namespace]  ||= namespace
       options[:expires_in] ||= expires_in
       options
+    end
+
+    def pool_options(options)
+      { size:    options.fetch(:pool_size, 5),
+        timeout: options.fetch(:pool_timeout, 5) }
     end
 
     def namespaced_key(key, options)
