@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Readthis::VERSION
   spec.authors       = ['Parker Selbert']
   spec.email         = ['parker@sorentwo.com']
-  spec.summary       = 'Performant active support compliant caching with redis'
-  spec.description   = 'Performant active support compliant caching with redis'
+  spec.summary       = 'Pooled active support compliant caching with redis'
+  spec.description   = 'Pooled active support compliant caching with redis'
   spec.homepage      = 'https://github.com/sorentwo/readthis'
   spec.license       = 'MIT'
 
