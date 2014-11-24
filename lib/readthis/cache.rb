@@ -1,3 +1,4 @@
+require 'readthis/expanders'
 require 'readthis/notifications'
 require 'redis'
 require 'connection_pool'
@@ -177,9 +178,7 @@ module Readthis
     end
 
     def namespaced_key(key, options)
-      namespace = options[:namespace]
-
-      [namespace, key].compact.join(':')
+      Readthis::Expanders.expand(key, options[:namespace])
     end
   end
 end
