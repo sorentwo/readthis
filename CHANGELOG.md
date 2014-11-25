@@ -1,4 +1,4 @@
-## Unreleased
+## v0.2.0 2014-11-24
 
 - Instrument all caching methods. Will use `ActiveSupport::Notifications`
   if available, otherwise falls back to a polyfill.
