@@ -1,4 +1,6 @@
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in readthis.gemspec
 gemspec
+
+gem 'benchmark-ips'
+gem 'redis-activesupport', github: 'sorentwo/redis-activesupport'
