@@ -3,10 +3,12 @@
 
 # Readthis
 
-An ActiveSupport::Cache compatible redis based cache focused on speed,
-simplicity, and forced pooling.
-
-The only dependencies are `redis` and `connection_pool`.
+Readthis is a drop in replacement for any ActiveSupport compliant cache, but
+emphasizes performance and simplicity. It takes some cues from Dalli (connection
+pooling), the popular Memcache client. Below are some performance comparisons
+against the only other notable redis cache implementation, `redis-activesupport`,
+which has been abandoned and doesn't actually comply to Rails 4.2 cache store
+behavior for `fetch_multi`.
 
 ## Footprint & Performance
 
