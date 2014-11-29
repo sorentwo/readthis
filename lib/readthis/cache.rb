@@ -143,9 +143,7 @@ module Readthis
 
     def clear
       instrument(:clear, '*') do
-        with do |store|
-          store.flushdb
-        end
+        with(&:flushdb)
       end
     end
 

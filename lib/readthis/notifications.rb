@@ -1,6 +1,6 @@
 module Readthis
   module Notifications
-    def self.instrument(name, payload)
+    def self.instrument(_name, payload)
       yield(payload)
     end
   end
