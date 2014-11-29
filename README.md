@@ -68,7 +68,7 @@ config.cache_store = :readthis_store, ENV.fetch('REDIS_URL'), {
 
 Otherwise you can use it anywhere, without any reliance on ActiveSupport:
 
-```
+```ruby
 require 'readthis'
 
 cache = Readthis::Cache.new(ENV.fetch('REDIS_URL'), expires_in: 2.weeks)
