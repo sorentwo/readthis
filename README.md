@@ -56,12 +56,38 @@ gem 'readthis'
 
 ## Usage
 
-Use it the same way as any other [ActiveSupport::Cache::Store][store]. Readthis
-supports all of the standard cache methods except for the following (with
-reasons):
+Use it the same way as any other [ActiveSupport::Cache::Store][store]. Within a
+rails environment config:
+
+```ruby
+config.cache_store = :readthis_store, ENV.fetch('REDIS_URL'), {
+  expires_in: 2.weeks,
+  namespace: 'cache'
+}
+```
+
+Otherwise you can use it anywhere, without any reliance on ActiveSupport:
+
+```
+require 'readthis'
+
+cache = Readthis::Cache.new(ENV.fetch('REDIS_URL'), expires_in: 2.weeks)
+```
+
+You'll want to use a specific database for caching, just in case you need to
+clear the cache entirely. Appending a number between 0 and 15 will specify the
+redis database, which defaults to 0. For example, using database 2:
+
+```
+REDIS_URL=redis://localhost:6379/2
+```
+
+## Differences
+
+Readthis supports all of standard cache methods except for the following:
 
 * `cleanup` - redis does this with ttl for us already
-* `delete_matched` - you really don't want to do perform key matching operations
+* `delete_matched` - you really don't want to perform key matching operations
   in redis. They are linear time and only support basic globbing.
 
 ## Contributing
