@@ -90,12 +90,4 @@ Readthis supports all of standard cache methods except for the following:
 * `delete_matched` - you really don't want to perform key matching operations
   in redis. They are linear time and only support basic globbing.
 
-## Contributing
-
-1. Fork it ( https://github.com/[my-github-username]/readthis/fork )
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
-
 [store]: http://api.rubyonrails.org/classes/ActiveSupport/Cache/Store.html
