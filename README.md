@@ -24,26 +24,26 @@ Performance compared to `redis-activesupport` for \*multi operations:
 
 ```
 Calculating -------------------------------------
- readthis:read-multi   109.000  i/100ms
-  redisas:read-multi    95.000  i/100ms
+ readthis:read-multi   117.000  i/100ms
+  redisas:read-multi    98.000  i/100ms
 -------------------------------------------------
- readthis:read-multi      1.112k (± 2.2%) i/s -      5.559k
-  redisas:read-multi    978.047  (± 3.9%) i/s -      4.940k
+ readthis:read-multi      1.241k (± 3.5%) i/s -      6.201k
+  redisas:read-multi    958.080  (± 4.7%) i/s -      4.802k
 
 Comparison:
- readthis:read-multi:     1111.7 i/s
-  redisas:read-multi:      978.0 i/s - 1.14x slower
+ readthis:read-multi:     1241.3 i/s
+  redisas:read-multi:      958.1 i/s - 1.30x slower
 
 Calculating -------------------------------------
-readthis:fetch-multi   106.000  i/100ms
+readthis:fetch-multi   114.000  i/100ms
  redisas:fetch-multi    84.000  i/100ms
 -------------------------------------------------
-readthis:fetch-multi      1.077k (± 2.5%) i/s -      5.406k
- redisas:fetch-multi    837.606  (± 4.2%) i/s -      4.200k
+readthis:fetch-multi      1.192k (± 4.1%) i/s -      6.042k
+ redisas:fetch-multi    844.769  (± 3.4%) i/s -      4.284k
 
 Comparison:
-readthis:fetch-multi:     1077.2 i/s
- redisas:fetch-multi:      837.6 i/s - 1.29x slower
+readthis:fetch-multi:     1192.1 i/s
+ redisas:fetch-multi:      844.8 i/s - 1.41x slower
 ```
 
 ## Installation
