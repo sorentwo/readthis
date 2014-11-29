@@ -92,13 +92,12 @@ module Readthis
 
     def read_multi(*keys)
       options = merged_options(extract_options!(keys))
+      mapping = keys.map { |key| namespaced_key(key, options) }
       results = []
 
       instrument(:read_multi, keys) do
         with do |store|
-          results = store.pipelined do
-            keys.each { |key| store.get(namespaced_key(key, options)) }
-          end
+          results = store.mget(mapping)
         end
 
         keys.zip(results).to_h
