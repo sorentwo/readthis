@@ -28,5 +28,11 @@ RSpec.describe Readthis::Expanders do
 
       expect(expand(keyhash)).to eq('alpha=1/beta=2')
     end
+
+    it 'uses the to_param method if available' do
+      object = double(to_param: 'thing')
+
+      expect(expand(object)).to eq('thing')
+    end
   end
 end
