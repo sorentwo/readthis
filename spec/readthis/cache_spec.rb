@@ -45,11 +45,11 @@ RSpec.describe Readthis::Cache do
     end
 
     it 'expands non-string keys' do
-      key_obj = double(cache_key: 'custom-key')
+      key_obj = double(cache_key: 'custom')
 
       cache.write(key_obj, 'some-value')
 
-      expect(cache.read('custom-key')).to eq('some-value')
+      expect(cache.read('custom')).to eq('some-value')
     end
   end
 

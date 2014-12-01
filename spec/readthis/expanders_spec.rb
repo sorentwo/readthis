@@ -7,7 +7,7 @@ RSpec.describe Readthis::Expanders do
 
   describe '#expand' do
     it 'namespaces a plain string' do
-      expect(expand('thing', 'space')).to eq('space/thing')
+      expect(expand('thing', 'space')).to eq('space:thing')
     end
 
     it 'expands an object that has a cache_key method' do
@@ -21,6 +21,12 @@ RSpec.describe Readthis::Expanders do
 
       expect(expand(['alpha', 'beta'])).to eq('alpha/beta')
       expect(expand([object, object])).to eq('gamma/gamma')
+    end
+
+    it 'expands the keys of a hash' do
+      keyhash = { 'beta' => 2, alpha: 1 }
+
+      expect(expand(keyhash)).to eq('alpha=1/beta=2')
     end
   end
 end

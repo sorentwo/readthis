@@ -5,11 +5,13 @@ module Readthis
         key.cache_key
       elsif key.is_a?(Array)
         key.flat_map { |elem| expand(elem) }.join('/')
+      elsif key.is_a?(Hash)
+        key.sort_by { |key, _| key.to_s }.map { |key, val| "#{key}=#{val}" }.join('/')
       else
         key
       end
 
-      namespace ? "#{namespace}/#{expanded}" : expanded
+      namespace ? "#{namespace}:#{expanded}" : expanded
     end
   end
 end
