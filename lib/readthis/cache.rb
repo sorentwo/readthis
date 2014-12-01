@@ -33,10 +33,8 @@ module Readthis
     end
 
     def read(key, options = {})
-      instrument(:read, key) do
-        with do |store|
-          store.get(namespaced_key(key, merged_options(options)))
-        end
+      invoke(:read, key) do |store|
+        store.get(namespaced_key(key, merged_options(options)))
       end
     end
 
@@ -44,22 +42,18 @@ module Readthis
       options    = merged_options(options)
       namespaced = namespaced_key(key, options)
 
-      instrument(:write, key) do
-        with do |store|
-          if expiration = options[:expires_in]
-            store.setex(namespaced, expiration, value)
-          else
-            store.set(namespaced, value)
-          end
+      invoke(:write, key) do |store|
+        if expiration = options[:expires_in]
+          store.setex(namespaced, expiration, value)
+        else
+          store.set(namespaced, value)
         end
       end
     end
 
     def delete(key, options = {})
-      instrument(:delete, key) do
-        with do |store|
-          store.del(namespaced_key(key, merged_options(options)))
-        end
+      invoke(:delete, key) do |store|
+        store.del(namespaced_key(key, merged_options(options)))
       end
     end
 
@@ -75,32 +69,23 @@ module Readthis
     end
 
     def increment(key, options = {})
-      instrument(:incremenet, key) do
-        with do |store|
-          store.incr(namespaced_key(key, merged_options(options)))
-        end
+      invoke(:incremenet, key) do |store|
+        store.incr(namespaced_key(key, merged_options(options)))
       end
     end
 
     def decrement(key, options = {})
-      instrument(:decrement, key) do
-        with do |store|
-          store.decr(namespaced_key(key, merged_options(options)))
-        end
+      invoke(:decrement, key) do |store|
+        store.decr(namespaced_key(key, merged_options(options)))
       end
     end
 
     def read_multi(*keys)
       options = merged_options(extract_options!(keys))
       mapping = keys.map { |key| namespaced_key(key, options) }
-      results = []
 
-      instrument(:read_multi, keys) do
-        with do |store|
-          results = store.mget(mapping)
-        end
-
-        keys.zip(results).to_h
+      invoke(:read_multi, keys) do |store|
+        keys.zip(store.mget(mapping)).to_h
       end
     end
 
@@ -115,15 +100,13 @@ module Readthis
       results = read_multi(*keys)
       options = merged_options(extract_options!(keys))
 
-      instrument(:fetch_multi, keys) do
-        with do |store|
-          store.pipelined do
-            results.each do |key, value|
-              if value.nil?
-                value = yield key
-                write(key, value, options)
-                results[key] = value
-              end
+      invoke(:fetch_multi, keys) do |store|
+        store.pipelined do
+          results.each do |key, value|
+            if value.nil?
+              value = yield key
+              write(key, value, options)
+              results[key] = value
             end
           end
         end
@@ -133,17 +116,13 @@ module Readthis
     end
 
     def exist?(key, options = {})
-      instrument(:exist?, key) do
-        with do |store|
-          store.exists(namespaced_key(key, merged_options(options)))
-        end
+      invoke(:exist?, key) do |store|
+        store.exists(namespaced_key(key, merged_options(options)))
       end
     end
 
     def clear
-      instrument(:clear, '*') do
-        with(&:flushdb)
-      end
+      invoke(:clear, '*', &:flushdb)
     end
 
     private
@@ -155,8 +134,10 @@ module Readthis
       self.class.notifications.instrument(name, key) { yield(payload) }
     end
 
-    def with(&block)
-      pool.with(&block)
+    def invoke(operation, key, &block)
+      instrument(operation, key) do
+        pool.with(&block)
+      end
     end
 
     def extract_options!(array)
