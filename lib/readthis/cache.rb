@@ -156,7 +156,7 @@ module Readthis
     end
 
     def namespaced_key(key, options)
-      Readthis::Expanders.expand(key, options[:namespace])
+      Readthis::Expanders.namespace_key(key, options[:namespace])
     end
   end
 end

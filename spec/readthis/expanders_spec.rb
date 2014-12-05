@@ -2,7 +2,7 @@ require 'readthis/expanders'
 
 RSpec.describe Readthis::Expanders do
   def expand(key, namespace = nil)
-    Readthis::Expanders.expand(key, namespace)
+    Readthis::Expanders.namespace_key(key, namespace)
   end
 
   describe '#expand' do
