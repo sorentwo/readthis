@@ -1,3 +1,4 @@
+require 'readthis/compressor'
 require 'readthis/expanders'
 require 'readthis/notifications'
 require 'redis'
@@ -6,7 +7,13 @@ require 'connection_pool'
 
 module Readthis
   class Cache
-    attr_reader :expires_in, :namespace, :pool
+    attr_reader :compress,
+      :compression_threshold,
+      :expires_in,
+      :namespace,
+      :pool
+
+    alias_method :compress?, :compress
 
     # Provide a class level lookup of the proper notifications module.
     # Instrumention is expected to occur within applications that have
@@ -23,10 +30,23 @@ module Readthis
     # Creates a new Readthis::Cache object with the given redis URL. The URL
     # is parsed by the redis client directly.
     #
+    # @param url [String] A redis compliant url with necessary connection details
+    # @option options [String] :namespace Prefix used to namespace entries
+    # @option options [Number] :expires_in The number of seconds until an entry expires
+    # @option options [Boolean] :compress Enable or disable automatic compression
+    # @option options [Number] :compression_threshold The size a string must be for compression
+    #
+    # @example Create a new cache instance
     #   Readthis::Cache.new('redis://localhost:6379/0', namespace: 'cache')
+    #
+    # @example Create a compressed cache instance
+    #   Readthis::Cache.new('redis://localhost:6379/0', compress: true, compression_threshold: 2048)
+    #
     def initialize(url, options = {})
       @expires_in = options.fetch(:expires_in, nil)
-      @namespace  = options.fetch(:namespace, nil)
+      @namespace  = options.fetch(:namespace,  nil)
+      @compress   = options.fetch(:compress,   false)
+      @compression_threshold = options.fetch(:compression_threshold, 1024)
 
       @pool = ConnectionPool.new(pool_options(options)) do
         Redis.new(url: url, driver: :hiredis)
@@ -35,7 +55,9 @@ module Readthis
 
     def read(key, options = {})
       invoke(:read, key) do |store|
-        store.get(namespaced_key(key, merged_options(options)))
+        value = store.get(namespaced_key(key, merged_options(options)))
+
+        decompressed(value)
       end
     end
 
@@ -45,9 +67,9 @@ module Readthis
 
       invoke(:write, key) do |store|
         if expiration = options[:expires_in]
-          store.setex(namespaced, expiration, value)
+          store.setex(namespaced, expiration, compressed(value))
         else
-          store.set(namespaced, value)
+          store.set(namespaced, compressed(value))
         end
       end
     end
@@ -127,6 +149,26 @@ module Readthis
     end
 
     private
+
+    def compressed(value)
+      if compress?
+        compressor.compress(value)
+      else
+        value
+      end
+    end
+
+    def decompressed(value)
+      if compress?
+        compressor.decompress(value)
+      else
+        value
+      end
+    end
+
+    def compressor
+      @compressor ||= Readthis::Compressor.new(threshold: compression_threshold)
+    end
 
     def instrument(operation, key)
       name    = "cache_#{operation}.active_support"

@@ -20,6 +20,17 @@ RSpec.describe Readthis::Cache do
 
       expect(cache.expires_in).to eq(10)
     end
+
+    it 'stores compression parameters' do
+      cache = Readthis::Cache.new(
+        url,
+        compress: true,
+        compression_threshold: 8
+      )
+
+      expect(cache.compress).to be_truthy
+      expect(cache.compression_threshold).to eq(8)
+    end
   end
 
   describe '#write' do
@@ -50,6 +61,19 @@ RSpec.describe Readthis::Cache do
       cache.write(key_obj, 'some-value')
 
       expect(cache.read('custom')).to eq('some-value')
+    end
+  end
+
+  describe '#compress' do
+    it 'round trips entries when compression is enabled' do
+      com_cache = Readthis::Cache.new(url, compress: true, compression_threshold: 8)
+      raw_cache = Readthis::Cache.new(url)
+      value = 'enough text that it should be compressed'
+
+      com_cache.write('compressed', value)
+
+      expect(raw_cache.read('compressed')).not_to eq(value)
+      expect(com_cache.read('compressed')).to eq(value)
     end
   end
 
