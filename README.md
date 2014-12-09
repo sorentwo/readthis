@@ -17,8 +17,8 @@ Footprint compared to `redis-activesupport`:
 
 ```
 # Total allocated objects after require
-readthis: 19,964
-redis-activesupport: 78,630
+readthis: 20602
+redis-activesupport: 78630
 ```
 
 Performance compared to `dalli` and `redis-activesupport` for \*multi
@@ -26,32 +26,32 @@ operations:
 
 ```
 Calculating -------------------------------------
- readthis:read-multi   118.000  i/100ms
-  redisas:read-multi    94.000  i/100ms
-    dalli:read-multi    92.000  i/100ms
+ readthis:read-multi   500.000  i/100ms
+  redisas:read-multi    95.000  i/100ms
+    dalli:read-multi    97.000  i/100ms
 -------------------------------------------------
- readthis:read-multi      1.206k (± 4.6%) i/s -      6.018k
-  redisas:read-multi    973.086  (± 4.4%) i/s -      4.888k
-    dalli:read-multi    949.348  (± 4.1%) i/s -      4.784k
+ readthis:read-multi      5.286k (± 2.7%) i/s -     26.500k
+  redisas:read-multi    959.405  (± 4.2%) i/s -      4.845k
+    dalli:read-multi    978.803  (± 2.1%) i/s -      4.947k
 
 Comparison:
- readthis:read-multi:     1206.0 i/s
-  redisas:read-multi:      973.1 i/s - 1.24x slower
-    dalli:read-multi:      949.3 i/s - 1.27x slower
+ readthis:read-multi:     5286.0 i/s
+    dalli:read-multi:      978.8 i/s - 5.40x slower
+  redisas:read-multi:      959.4 i/s - 5.51x slower
 
 Calculating -------------------------------------
-readthis:fetch-multi   114.000  i/100ms
- redisas:fetch-multi    82.000  i/100ms
-   dalli:fetch-multi    97.000  i/100ms
+readthis:fetch-multi   448.000  i/100ms
+ redisas:fetch-multi    84.000  i/100ms
+   dalli:fetch-multi    99.000  i/100ms
 -------------------------------------------------
-readthis:fetch-multi      1.157k (± 5.0%) i/s -      5.814k
- redisas:fetch-multi    829.211  (± 4.2%) i/s -      4.182k
-   dalli:fetch-multi    979.081  (± 3.8%) i/s -      4.947k
+readthis:fetch-multi      4.682k (± 2.4%) i/s -     23.744k
+ redisas:fetch-multi    848.101  (± 3.2%) i/s -      4.284k
+   dalli:fetch-multi      1.006k (± 2.4%) i/s -      5.049k
 
 Comparison:
-readthis:fetch-multi:     1157.2 i/s
-   dalli:fetch-multi:      979.1 i/s - 1.18x slower
- redisas:fetch-multi:      829.2 i/s - 1.40x slower
+readthis:fetch-multi:     4682.4 i/s
+   dalli:fetch-multi:     1005.6 i/s - 4.66x slower
+ redisas:fetch-multi:      848.1 i/s - 5.52x slower
 ```
 
 ## Installation

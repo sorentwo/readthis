@@ -1,6 +1,7 @@
 require 'readthis/expanders'
 require 'readthis/notifications'
 require 'redis'
+require 'hiredis'
 require 'connection_pool'
 
 module Readthis
@@ -28,7 +29,7 @@ module Readthis
       @namespace  = options.fetch(:namespace, nil)
 
       @pool = ConnectionPool.new(pool_options(options)) do
-        Redis.new(url: url)
+        Redis.new(url: url, driver: :hiredis)
       end
     end
 
