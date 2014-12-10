@@ -108,7 +108,9 @@ module Readthis
       mapping = keys.map { |key| namespaced_key(key, options) }
 
       invoke(:read_multi, keys) do |store|
-        keys.zip(store.mget(mapping)).to_h
+        values = decompressed_multi(store.mget(mapping))
+
+        keys.zip(values).to_h
       end
     end
 
@@ -163,6 +165,14 @@ module Readthis
         compressor.decompress(value)
       else
         value
+      end
+    end
+
+    def decompressed_multi(values)
+      if compress?
+        values.map { |value| compressor.decompress(value) }
+      else
+        values
       end
     end
 
