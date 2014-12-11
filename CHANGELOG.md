@@ -1,3 +1,11 @@
+## v0.4.0 2014-12-11
+
+- Added: Force the use of `hiredis` as the adapter. It is dramatically faster,
+  but prevents the project from being used in `jruby`. If we get interest from
+  some `jruby` projects we can soften the requirement.
+- Added: Compression! Adheres to the `ActiveSupport::Store` documentation.
+- Fixed: Gracefully handle `nil` passed as `options` to any cache method.
+
 ## v0.3.0 2014-12-01
 
 - Added: Use `to_param` for key expansion, only when available. Makes it
