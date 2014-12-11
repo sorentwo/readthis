@@ -47,8 +47,22 @@ You'll want to use a specific database for caching, just in case you need to
 clear the cache entirely. Appending a number between 0 and 15 will specify the
 redis database, which defaults to 0. For example, using database 2:
 
-```
+```bash
 REDIS_URL=redis://localhost:6379/2
+```
+
+Compression can be enabled for all actions by passing the `compress` flag. By
+default all values greater than 1024k will be compressed automatically. If there
+is any content has not been stored with compression, or perhaps was compressed
+but is beneath the compression threshold, it will be passed through as is. This
+means it is safe to enable or change compression with an existing cache. There
+will be a decoding performance penalty in this case, but it should be minor.
+
+```ruby
+config.cache_store = :readthis_store, ENV.fetch('REDIS_URL'), {
+  compress: true,
+  compression_threshold: 2.kilobytes
+}
 ```
 
 ## Differences
