@@ -198,6 +198,7 @@ module Readthis
     end
 
     def merged_options(options)
+      options = options || {}
       options[:namespace]  ||= namespace
       options[:expires_in] ||= expires_in
       options

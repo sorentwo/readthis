@@ -64,6 +64,12 @@ RSpec.describe Readthis::Cache do
     end
   end
 
+  describe '#read' do
+    it 'gracefully handles nil options' do
+      expect { cache.read('whatever', nil) }.not_to raise_error
+    end
+  end
+
   describe '#compress' do
     it 'round trips entries when compression is enabled' do
       com_cache = Readthis::Cache.new(url, compress: true, compression_threshold: 8)
