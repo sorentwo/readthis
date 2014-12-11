@@ -2,25 +2,11 @@ require 'zlib'
 
 module Readthis
   class Compressor
-    attr_reader :threshold
-
-    # Create a new Readthis::Compressor object that pivots on the provided
-    # threshold value.
-    #
-    # @param threshold [Number] the threshold size required for compression
-    def initialize(threshold: 1024)
-      @threshold = threshold
-    end
-
     # Compress a value if its size is greater or equal to the current threshold.
     #
     # @param value [String] a string to compress
     def compress(value)
-      if value.size >= threshold
-        Zlib::Deflate.deflate(value)
-      else
-        value
-      end
+      Zlib::Deflate.deflate(value)
     end
 
     # Decompress a previously compressed object. It will attempt to decode a
@@ -29,11 +15,7 @@ module Readthis
     #
     # @param value [String] a possibly compressed string to decompress
     def decompress(value)
-      if value.size >= threshold
-        Zlib::Inflate.inflate(value)
-      else
-        value
-      end
+      Zlib::Inflate.inflate(value)
     rescue Zlib::Error
       value
     end
