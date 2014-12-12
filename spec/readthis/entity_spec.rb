@@ -2,7 +2,7 @@ require 'readthis/entity'
 require 'json'
 
 RSpec.describe Readthis::Entity do
-  describe '.dump' do
+  describe '#dump' do
     it 'marshals the object as a ruby string' do
       string = 'some string'
       entity = Readthis::Entity.new
@@ -32,7 +32,7 @@ RSpec.describe Readthis::Entity do
     end
   end
 
-  describe '.load' do
+  describe '#load' do
     it 'unmarshals a value' do
       object = { a: 1, b: '2' }
       dumped = Marshal.dump(object)
