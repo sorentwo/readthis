@@ -36,6 +36,14 @@ RSpec.describe Readthis::Cache do
       expect(cache.read('some-key', namespace: 'cache')).to eq('some-value')
     end
 
+    it 'roundtrips values as their original type' do
+      object = { a: 1, b: 2 }
+
+      cache.write('obj-key', object)
+
+      expect(cache.read('obj-key')).to eq(object)
+    end
+
     it 'uses a custom expiration' do
       cache.write('some-key', 'some-value', expires_in: 1)
 

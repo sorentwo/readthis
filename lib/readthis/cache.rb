@@ -51,6 +51,18 @@ module Readthis
       end
     end
 
+    # Fetches data from the cache, using the given key. If there is data in
+    # the cache with the given key, then that data is returned. Otherwise, nil
+    # is returned.
+    #
+    # @param [String] Key for lookup
+    # @param [Hash] Optional overrides
+    #
+    # @example
+    #
+    #   cache.read('missing') # => nil
+    #   cache.read('matched') # => 'some value'
+    #
     def read(key, options = {})
       invoke(:read, key) do |store|
         value = store.get(namespaced_key(key, merged_options(options)))
@@ -94,7 +106,7 @@ module Readthis
     # If the key doesn't exist it will be initialized at 0. If the key exists
     # but it isn't a Fixnum it will be initialized at 0.
     #
-    # @param [String] Key of the value
+    # @param [String] Key for lookup
     # @param [Fixnum] Value to increment by
     # @param [Hash] Optional overrides
     #
@@ -115,7 +127,7 @@ module Readthis
     # If the key doesn't exist it will be initialized at 0. If the key exists
     # but it isn't a Fixnum it will be initialized at 0.
     #
-    # @param [String] Key of the value
+    # @param [String] Key for lookup
     # @param [Fixnum] Value to decrement by
     # @param [Hash] Optional overrides
     #
