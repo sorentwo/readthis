@@ -1,3 +1,15 @@
+## v0.5.0 2014-12-12
+
+- Added: All read and write operations are marshalled to and from storage. This
+  allows hashes, arrays, etc. to be restored instead of always returning a
+  string. Unlike `ActiveSupport::Store::Entity`, no new objects are allocated
+  for each entity, reducing GC and improving performance.
+- Fixed: Increment/Decrement interface was only accepting two params instead of
+  three. Now accepts `amount` as the second parameter.
+- Changed: Increment/Decrement no longer use `incby` and `decby`, as they don't
+  work with marshalled values. This means they are not entirely atomic, so race
+  conditions are possible.
+
 ## v0.4.0 2014-12-11
 
 - Added: Force the use of `hiredis` as the adapter. It is dramatically faster,
