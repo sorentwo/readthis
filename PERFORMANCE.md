@@ -1,4 +1,4 @@
-Results from the various benchmarks in `./bencharks`. Hardware doesnt't matter
+Results from the various benchmarks in `./bencharks`. Hardware doesn't matter
 much, as we're simply looking for a comparison against other libraries and prior
 verions.
 
