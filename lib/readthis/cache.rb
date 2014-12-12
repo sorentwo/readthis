@@ -1,6 +1,7 @@
 require 'readthis/entity'
 require 'readthis/expanders'
 require 'readthis/notifications'
+require 'readthis/passthrough'
 require 'redis'
 require 'hiredis'
 require 'connection_pool'
@@ -24,11 +25,14 @@ module Readthis
     # Creates a new Readthis::Cache object with the given redis URL. The URL
     # is parsed by the redis client directly.
     #
-    # @param url [String] A redis compliant url with necessary connection details
-    # @option options [String] :namespace Prefix used to namespace entries
-    # @option options [Number] :expires_in The number of seconds until an entry expires
-    # @option options [Boolean] :compress Enable or disable automatic compression
-    # @option options [Number] :compression_threshold The size a string must be for compression
+    # @param [String] A redis compliant url with necessary connection details
+    # @option [Boolean] :compress (false) Enable or disable automatic compression
+    # @option [Number] :compression_threshold (8k) The size a string must be for compression
+    # @option [Number] :expires_in The number of seconds until an entry expires
+    # @option [Module] :marshal (Marshal) Any module that responds to `dump` and `load`
+    # @option [String] :namespace Prefix used to namespace entries
+    # @option [Number] :pool_size (5) The number of threads in the pool
+    # @option [Number] :pool_timeout (5) How long before a thread times out
     #
     # @example Create a new cache instance
     #   Readthis::Cache.new('redis://localhost:6379/0', namespace: 'cache')
