@@ -1,4 +1,4 @@
-require 'readthis/compressor'
+require 'readthis/entity'
 require 'readthis/expanders'
 require 'readthis/notifications'
 require 'redis'
@@ -7,13 +7,7 @@ require 'connection_pool'
 
 module Readthis
   class Cache
-    attr_reader :compress,
-      :compression_threshold,
-      :expires_in,
-      :namespace,
-      :pool
-
-    alias_method :compress?, :compress
+    attr_reader :entity, :expires_in, :namespace, :pool
 
     # Provide a class level lookup of the proper notifications module.
     # Instrumention is expected to occur within applications that have
@@ -45,8 +39,12 @@ module Readthis
     def initialize(url, options = {})
       @expires_in = options.fetch(:expires_in, nil)
       @namespace  = options.fetch(:namespace,  nil)
-      @compress   = options.fetch(:compress,   false)
-      @compression_threshold = options.fetch(:compression_threshold, 1024)
+
+      @entity = Readthis::Entity.new(
+        marshal:   options.fetch(:marshal, Marshal),
+        compress:  options.fetch(:compress, false),
+        threshold: options.fetch(:compression_threshold, 1024)
+      )
 
       @pool = ConnectionPool.new(pool_options(options)) do
         Redis.new(url: url, driver: :hiredis)
@@ -57,7 +55,7 @@ module Readthis
       invoke(:read, key) do |store|
         value = store.get(namespaced_key(key, merged_options(options)))
 
-        decompressed(value)
+        entity.load(value)
       end
     end
 
@@ -67,9 +65,9 @@ module Readthis
 
       invoke(:write, key) do |store|
         if expiration = options[:expires_in]
-          store.setex(namespaced, expiration, compressed(value))
+          store.setex(namespaced, expiration, entity.dump(value))
         else
-          store.set(namespaced, compressed(value))
+          store.set(namespaced, entity.dump(value))
         end
       end
     end
@@ -108,7 +106,7 @@ module Readthis
       mapping = keys.map { |key| namespaced_key(key, options) }
 
       invoke(:read_multi, keys) do |store|
-        values = decompressed_multi(store.mget(mapping))
+        values = store.mget(mapping).map { |value| entity.load(value) }
 
         keys.zip(values).to_h
       end
@@ -151,34 +149,6 @@ module Readthis
     end
 
     private
-
-    def compressed(value)
-      if compress?
-        compressor.compress(value)
-      else
-        value
-      end
-    end
-
-    def decompressed(value)
-      if compress?
-        compressor.decompress(value)
-      else
-        value
-      end
-    end
-
-    def decompressed_multi(values)
-      if compress?
-        values.map { |value| compressor.decompress(value) }
-      else
-        values
-      end
-    end
-
-    def compressor
-      @compressor ||= Readthis::Compressor.new(threshold: compression_threshold)
-    end
 
     def instrument(operation, key)
       name    = "cache_#{operation}.active_support"

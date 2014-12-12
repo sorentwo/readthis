@@ -24,6 +24,12 @@ RSpec.describe Readthis::Entity do
 
       expect(entity.dump(string)).not_to eq(dumped)
     end
+
+    it 'does not dump nil values' do
+      entity = Readthis::Entity.new
+
+      expect(entity.dump(nil)).to be_nil
+    end
   end
 
   describe '.load' do
@@ -37,12 +43,31 @@ RSpec.describe Readthis::Entity do
 
     it 'uncompresses when compression is enabled' do
       string = 'another one of those huge strings'
-      entity = Readthis::Entity.new(compress: true, threshold: 8)
+      entity = Readthis::Entity.new(compress: true, threshold: 0)
       dumped = Marshal.dump(string)
 
       compressed = entity.compress(dumped)
 
       expect(entity.load(compressed)).not_to eq(string)
+    end
+
+    it 'does not try to load a nil value' do
+      entity = Readthis::Entity.new
+
+      expect(entity.load(nil)).to be_nil
+    end
+
+    it 'passes through the value when it fails to marshal' do
+      entity = Readthis::Entity.new
+
+      expect { entity.load('not marshalled') }.not_to raise_error
+    end
+
+    it 'passes through the value when it fails to decompress' do
+      entity = Readthis::Entity.new(compress: true, threshold: 0)
+      dumped = Marshal.dump('some sizable string')
+
+      expect { entity.load(dumped) }.not_to raise_error
     end
   end
 end
