@@ -14,7 +14,7 @@ behavior for `fetch_multi`.
 
 ## Footprint & Performance
 
-See [Performance][PERFORMANCE.md]
+See [Performance](PERFORMANCE.md)
 
 ## Installation
 
