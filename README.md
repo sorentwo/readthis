@@ -51,6 +51,8 @@ redis database, which defaults to 0. For example, using database 2:
 REDIS_URL=redis://localhost:6379/2
 ```
 
+### Compression
+
 Compression can be enabled for all actions by passing the `compress` flag. By
 default all values greater than 1024k will be compressed automatically. If there
 is any content has not been stored with compression, or perhaps was compressed
@@ -63,6 +65,24 @@ config.cache_store = :readthis_store, ENV.fetch('REDIS_URL'), {
   compress: true,
   compression_threshold: 2.kilobytes
 }
+```
+
+### Marshalling
+
+Readthis uses Ruby's `Marshal` module for dumping and loading all values by
+default. This isn't always the fastest option, depending on your use case it may
+be desirable to use a faster but more flexible marshaller.
+
+Use Oj for JSON marshalling, extremely fast, limited types:
+
+```ruby
+Readthis::Cache.new(marshal: Oj)
+```
+
+If you don't mind everything being a string then use the Passthrough marshal:
+
+```ruby
+Readthis::Cache.new(marshal: Readthis::Passthrough)
 ```
 
 ## Differences

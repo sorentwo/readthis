@@ -1,19 +1,14 @@
-require 'readthis/compressor'
+require 'readthis/entity'
 require 'readthis/expanders'
 require 'readthis/notifications'
+require 'readthis/passthrough'
 require 'redis'
 require 'hiredis'
 require 'connection_pool'
 
 module Readthis
   class Cache
-    attr_reader :compress,
-      :compression_threshold,
-      :expires_in,
-      :namespace,
-      :pool
-
-    alias_method :compress?, :compress
+    attr_reader :entity, :expires_in, :namespace, :pool
 
     # Provide a class level lookup of the proper notifications module.
     # Instrumention is expected to occur within applications that have
@@ -30,11 +25,14 @@ module Readthis
     # Creates a new Readthis::Cache object with the given redis URL. The URL
     # is parsed by the redis client directly.
     #
-    # @param url [String] A redis compliant url with necessary connection details
-    # @option options [String] :namespace Prefix used to namespace entries
-    # @option options [Number] :expires_in The number of seconds until an entry expires
-    # @option options [Boolean] :compress Enable or disable automatic compression
-    # @option options [Number] :compression_threshold The size a string must be for compression
+    # @param [String] A redis compliant url with necessary connection details
+    # @option [Boolean] :compress (false) Enable or disable automatic compression
+    # @option [Number] :compression_threshold (8k) The size a string must be for compression
+    # @option [Number] :expires_in The number of seconds until an entry expires
+    # @option [Module] :marshal (Marshal) Any module that responds to `dump` and `load`
+    # @option [String] :namespace Prefix used to namespace entries
+    # @option [Number] :pool_size (5) The number of threads in the pool
+    # @option [Number] :pool_timeout (5) How long before a thread times out
     #
     # @example Create a new cache instance
     #   Readthis::Cache.new('redis://localhost:6379/0', namespace: 'cache')
@@ -45,19 +43,35 @@ module Readthis
     def initialize(url, options = {})
       @expires_in = options.fetch(:expires_in, nil)
       @namespace  = options.fetch(:namespace,  nil)
-      @compress   = options.fetch(:compress,   false)
-      @compression_threshold = options.fetch(:compression_threshold, 1024)
+
+      @entity = Readthis::Entity.new(
+        marshal:   options.fetch(:marshal, Marshal),
+        compress:  options.fetch(:compress, false),
+        threshold: options.fetch(:compression_threshold, 1024)
+      )
 
       @pool = ConnectionPool.new(pool_options(options)) do
         Redis.new(url: url, driver: :hiredis)
       end
     end
 
+    # Fetches data from the cache, using the given key. If there is data in
+    # the cache with the given key, then that data is returned. Otherwise, nil
+    # is returned.
+    #
+    # @param [String] Key for lookup
+    # @param [Hash] Optional overrides
+    #
+    # @example
+    #
+    #   cache.read('missing') # => nil
+    #   cache.read('matched') # => 'some value'
+    #
     def read(key, options = {})
       invoke(:read, key) do |store|
         value = store.get(namespaced_key(key, merged_options(options)))
 
-        decompressed(value)
+        entity.load(value)
       end
     end
 
@@ -67,9 +81,9 @@ module Readthis
 
       invoke(:write, key) do |store|
         if expiration = options[:expires_in]
-          store.setex(namespaced, expiration, compressed(value))
+          store.setex(namespaced, expiration, entity.dump(value))
         else
-          store.set(namespaced, compressed(value))
+          store.set(namespaced, entity.dump(value))
         end
       end
     end
@@ -91,15 +105,45 @@ module Readthis
       value
     end
 
-    def increment(key, options = {})
+    # Increment a key in the store.
+    #
+    # If the key doesn't exist it will be initialized at 0. If the key exists
+    # but it isn't a Fixnum it will be initialized at 0.
+    #
+    # @param [String] Key for lookup
+    # @param [Fixnum] Value to increment by
+    # @param [Hash] Optional overrides
+    #
+    # @example
+    #
+    #   cache.increment('counter') # => 0
+    #   cache.increment('counter') # => 1
+    #   cache.increment('counter', 2) # => 3
+    #
+    def increment(key, amount = 1, options = {})
       invoke(:incremenet, key) do |store|
-        store.incr(namespaced_key(key, merged_options(options)))
+        alter(key, amount, options)
       end
     end
 
-    def decrement(key, options = {})
+    # Decrement a key in the store.
+    #
+    # If the key doesn't exist it will be initialized at 0. If the key exists
+    # but it isn't a Fixnum it will be initialized at 0.
+    #
+    # @param [String] Key for lookup
+    # @param [Fixnum] Value to decrement by
+    # @param [Hash] Optional overrides
+    #
+    # @example
+    #
+    #   cache.write('counter', 20) # => 20
+    #   cache.decrement('counter') # => 19
+    #   cache.decrement('counter', 2) # => 17
+    #
+    def decrement(key, amount = 1, options = {})
       invoke(:decrement, key) do |store|
-        store.decr(namespaced_key(key, merged_options(options)))
+        alter(key, amount * -1, options)
       end
     end
 
@@ -108,7 +152,7 @@ module Readthis
       mapping = keys.map { |key| namespaced_key(key, options) }
 
       invoke(:read_multi, keys) do |store|
-        values = decompressed_multi(store.mget(mapping))
+        values = store.mget(mapping).map { |value| entity.load(value) }
 
         keys.zip(values).to_h
       end
@@ -152,32 +196,11 @@ module Readthis
 
     private
 
-    def compressed(value)
-      if compress?
-        compressor.compress(value)
-      else
-        value
-      end
-    end
-
-    def decompressed(value)
-      if compress?
-        compressor.decompress(value)
-      else
-        value
-      end
-    end
-
-    def decompressed_multi(values)
-      if compress?
-        values.map { |value| compressor.decompress(value) }
-      else
-        values
-      end
-    end
-
-    def compressor
-      @compressor ||= Readthis::Compressor.new(threshold: compression_threshold)
+    def alter(key, amount, options)
+      number = read(key, options)
+      delta  = number.to_i + amount
+      write(key, delta, options)
+      delta
     end
 
     def instrument(operation, key)

@@ -20,17 +20,6 @@ RSpec.describe Readthis::Cache do
 
       expect(cache.expires_in).to eq(10)
     end
-
-    it 'stores compression parameters' do
-      cache = Readthis::Cache.new(
-        url,
-        compress: true,
-        compression_threshold: 8
-      )
-
-      expect(cache.compress).to be_truthy
-      expect(cache.compression_threshold).to eq(8)
-    end
   end
 
   describe '#write' do
@@ -45,6 +34,14 @@ RSpec.describe Readthis::Cache do
 
       expect(cache.read('some-key')).to be_nil
       expect(cache.read('some-key', namespace: 'cache')).to eq('some-value')
+    end
+
+    it 'roundtrips values as their original type' do
+      object = { a: 1, b: 2 }
+
+      cache.write('obj-key', object)
+
+      expect(cache.read('obj-key')).to eq(object)
     end
 
     it 'uses a custom expiration' do
@@ -70,7 +67,7 @@ RSpec.describe Readthis::Cache do
     end
   end
 
-  describe '#compress' do
+  describe 'compression' do
     it 'round trips entries when compression is enabled' do
       com_cache = Readthis::Cache.new(url, compress: true, compression_threshold: 8)
       raw_cache = Readthis::Cache.new(url)
@@ -129,11 +126,11 @@ RSpec.describe Readthis::Cache do
     it 'maps multiple values to keys' do
       cache.write('a', 1)
       cache.write('b', 2)
-      cache.write('c', 3)
+      cache.write('c', '3')
 
       expect(cache.read_multi('a', 'b', 'c')).to eq(
-        'a' => '1',
-        'b' => '2',
+        'a' => 1,
+        'b' => 2,
         'c' => '3',
       )
     end
@@ -143,8 +140,8 @@ RSpec.describe Readthis::Cache do
       cache.write('e', 2, namespace: 'cache')
 
       expect(cache.read_multi('d', 'e', namespace: 'cache')).to eq(
-        'd' => '1',
-        'e' => '2',
+        'd' => 1,
+        'e' => 2,
       )
     end
   end
@@ -157,9 +154,9 @@ RSpec.describe Readthis::Cache do
       results = cache.fetch_multi('a', 'b', 'c') { |key| key + key }
 
       expect(results).to eq(
-        'a' => '1',
+        'a' => 1,
         'b' => 'bb',
-        'c' => '3',
+        'c' => 3,
       )
     end
   end
@@ -188,7 +185,7 @@ RSpec.describe Readthis::Cache do
     it 'atomically increases the stored integer' do
       cache.write('counter', 10)
       expect(cache.increment('counter')).to eq(11)
-      expect(cache.read('counter')).to eq('11')
+      expect(cache.read('counter')).to eq(11)
     end
 
     it 'defaults a missing key to 1' do
