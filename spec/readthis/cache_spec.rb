@@ -177,7 +177,7 @@ RSpec.describe Readthis::Cache do
     it 'atomically increases the stored integer' do
       cache.write('counter', 10)
       expect(cache.increment('counter')).to eq(11)
-      expect(cache.read('counter')).to eq('11')
+      expect(cache.read('counter')).to eq(11)
     end
 
     it 'defaults a missing key to 1' do

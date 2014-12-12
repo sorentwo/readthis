@@ -89,15 +89,45 @@ module Readthis
       value
     end
 
-    def increment(key, options = {})
+    # Increment a key in the store.
+    #
+    # If the key doesn't exist it will be initialized at 0. If the key exists
+    # but it isn't a Fixnum it will be initialized at 0.
+    #
+    # @param [String] Key of the value
+    # @param [Fixnum] Value to increment by
+    # @param [Hash] Optional overrides
+    #
+    # @example
+    #
+    #   cache.increment('counter') # => 0
+    #   cache.increment('counter') # => 1
+    #   cache.increment('counter', 2) # => 3
+    #
+    def increment(key, amount = 1, options = {})
       invoke(:incremenet, key) do |store|
-        store.incr(namespaced_key(key, merged_options(options)))
+        alter(key, amount, options)
       end
     end
 
-    def decrement(key, options = {})
+    # Decrement a key in the store.
+    #
+    # If the key doesn't exist it will be initialized at 0. If the key exists
+    # but it isn't a Fixnum it will be initialized at 0.
+    #
+    # @param [String] Key of the value
+    # @param [Fixnum] Value to decrement by
+    # @param [Hash] Optional overrides
+    #
+    # @example
+    #
+    #   cache.write('counter', 20) # => 20
+    #   cache.decrement('counter') # => 19
+    #   cache.decrement('counter', 2) # => 17
+    #
+    def decrement(key, amount = 1, options = {})
       invoke(:decrement, key) do |store|
-        store.decr(namespaced_key(key, merged_options(options)))
+        alter(key, amount * -1, options)
       end
     end
 
@@ -149,6 +179,13 @@ module Readthis
     end
 
     private
+
+    def alter(key, amount, options)
+      number = read(key, options)
+      delta  = number.to_i + amount
+      write(key, delta, options)
+      delta
+    end
 
     def instrument(operation, key)
       name    = "cache_#{operation}.active_support"
