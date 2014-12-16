@@ -175,9 +175,13 @@ RSpec.describe Readthis::Cache do
   describe '#delete' do
     it 'deletes an existing key' do
       cache.write('not-long', 'for this world')
-      cache.delete('not-long')
 
+      expect(cache.delete('not-long')).to be_truthy
       expect(cache.read('not-long')).to be_nil
+    end
+
+    it 'safely returns false if nothing is deleted' do
+      expect(cache.delete('no-such-key')).to be_falsy
     end
   end
 

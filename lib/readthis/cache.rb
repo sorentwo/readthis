@@ -75,6 +75,18 @@ module Readthis
       end
     end
 
+    # Writes data to the cache using the given key. Will overwrite whatever
+    # value is already stored at that key.
+    #
+    # @param [String] Key for lookup
+    # @param [Hash] Optional overrides
+    #
+    # @example
+    #
+    #   cache.write('some-key', 'a bunch of text')                     # => 'OK'
+    #   cache.write('some-key', 'short lived', expires_in: 60)         # => 'OK'
+    #   cache.write('some-key', 'lives elsehwere', namespace: 'cache') # => 'OK'
+    #
     def write(key, value, options = {})
       options    = merged_options(options)
       namespaced = namespaced_key(key, options)
@@ -88,9 +100,21 @@ module Readthis
       end
     end
 
+    # Delete the value stored at the specified key. Returns `true` if
+    # anything was deleted, `false` otherwise.
+    #
+    # @params [String] The key for lookup
+    # @params [Hash] Optional overrides
+    #
+    # @example
+    #
+    #   cache.delete('existing-key') # => true
+    #   cache.delete('random-key')   # => false
     def delete(key, options = {})
+      namespaced = namespaced_key(key, merged_options(options))
+
       invoke(:delete, key) do |store|
-        store.del(namespaced_key(key, merged_options(options)))
+        store.del(namespaced) > 0
       end
     end
 
