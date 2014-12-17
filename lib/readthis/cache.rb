@@ -186,6 +186,13 @@ module Readthis
     # and filling in any cache misses. All read and write operations are
     # executed atomically.
     #
+    # @overload fetch_multi(keys)
+    #   Return all values fro the given keys, applying the block to the key
+    #   when a value is missing.
+    #   @param [String] One or more keys to fetch
+    #
+    # @example
+    #
     #   cache.fetch_multi('alpha', 'beta') do |key|
     #     "#{key}-was-missing"
     #   end

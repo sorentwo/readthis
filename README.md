@@ -7,10 +7,14 @@
 
 Readthis is a drop in replacement for any ActiveSupport compliant cache, but
 emphasizes performance and simplicity. It takes some cues from Dalli (connection
-pooling), the popular Memcache client. Below are some performance comparisons
-against the only other notable redis cache implementation, `redis-activesupport`,
-which has been abandoned and doesn't actually comply to Rails 4.2 cache store
-behavior for `fetch_multi`.
+pooling), the popular Memcache client.
+
+For any new projects there isn't any reason to stick with Memcached. Redis is
+as fast, if not faster in many scenarios, and is far more likely to be used
+elsewhere in the stack. See [this Stack Overflow post][stackoverflow] for more
+details.
+
+[stackoverflow]: http://stackoverflow.com/questions/10558465/memcache-vs-redis
 
 ## Footprint & Performance
 
@@ -51,6 +55,8 @@ redis database, which defaults to 0. For example, using database 2:
 ```bash
 REDIS_URL=redis://localhost:6379/2
 ```
+
+[store]: http://api.rubyonrails.org/classes/ActiveSupport/Cache/Store.html
 
 ### Compression
 
@@ -93,5 +99,3 @@ Readthis supports all of standard cache methods except for the following:
 * `cleanup` - redis does this with ttl for us already
 * `delete_matched` - you really don't want to perform key matching operations
   in redis. They are linear time and only support basic globbing.
-
-[store]: http://api.rubyonrails.org/classes/ActiveSupport/Cache/Store.html
