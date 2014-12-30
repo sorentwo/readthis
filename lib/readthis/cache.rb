@@ -214,13 +214,31 @@ module Readthis
       end
     end
 
+    # Returns `true` if the cache contains an entry for the given key.
+    #
+    # @param [String] Key for lookup
+    # @param [Hash] Optional overrides
+    #
+    # @example
+    #
+    #   cache.exist?('some-key') # => false
+    #   cache.exist?('some-key', namespace: 'cache') # => true
+    #
     def exist?(key, options = {})
       invoke(:exist?, key) do |store|
         store.exists(namespaced_key(key, merged_options(options)))
       end
     end
 
-    def clear
+    # Clear the entire cache. This flushes the current database, no
+    # globbing is applied.
+    #
+    # @param [Hash] Options, only present for compatibility.
+    #
+    # @example
+    #
+    #   cache.clear #=> 'OK'
+    def clear(options = {})
       invoke(:clear, '*', &:flushdb)
     end
 
