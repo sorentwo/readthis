@@ -78,7 +78,7 @@ config.cache_store = :readthis_store, ENV.fetch('REDIS_URL'), {
 
 Readthis uses Ruby's `Marshal` module for dumping and loading all values by
 default. This isn't always the fastest option, depending on your use case it may
-be desirable to use a faster but more flexible marshaller.
+be desirable to use a faster but less flexible marshaller.
 
 Use Oj for JSON marshalling, extremely fast, limited types:
 
