@@ -5,10 +5,12 @@ Bundler.setup
 require 'benchmark/ips'
 require 'dalli'
 require 'redis-activesupport'
+require 'active_support/cache/memory_store'
 require 'active_support/cache/dalli_store'
 require 'readthis'
 
 REDIS_URL = 'redis://localhost:6379/11'
+memory    = ActiveSupport::Cache::MemoryStore.new(expires_in: 60, namespace: 'mm')
 dalli     = ActiveSupport::Cache::DalliStore.new('localhost', namespace: 'da', pool_size: 5, expires_in: 60)
 redisas   = ActiveSupport::Cache::RedisStore.new(REDIS_URL + '/ra', expires_in: 60)
 readthis  = Readthis::Cache.new(REDIS_URL, namespace: 'rd', expires_in: 60)
@@ -16,12 +18,17 @@ readthis  = Readthis::Cache.new(REDIS_URL, namespace: 'rd', expires_in: 60)
 ('a'..'z').each do |key|
   value = key * 1024
 
+  memory.write(key, value)
   dalli.write(key, value)
   readthis.write(key, value)
   redisas.write(key, value)
 end
 
 Benchmark.ips do |x|
+  x.report 'memory:read-multi' do
+    memory.read_multi(*('a'..'z'))
+  end
+
   x.report 'readthis:read-multi' do
     readthis.read_multi(*('a'..'z'))
   end
@@ -38,6 +45,10 @@ Benchmark.ips do |x|
 end
 
 Benchmark.ips do |x|
+  x.report 'memory:fetch-multi' do
+    memory.fetch_multi(*('a'..'z')) { |_| 'missing' }
+  end
+
   x.report 'readthis:fetch-multi' do
     readthis.fetch_multi(*('a'..'z')) { |_| 'missing' }
   end
