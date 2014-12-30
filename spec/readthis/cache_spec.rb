@@ -158,6 +158,22 @@ RSpec.describe Readthis::Cache do
         'b' => 'bb',
         'c' => 3,
       )
+
+      expect(cache.read('b')).to eq('bb')
+    end
+
+    it 'uses passed options' do
+      cache.write('a', 1, namespace: 'alph')
+
+      results = cache.fetch_multi('a', 'b', namespace: 'alph') { |key| key }
+
+      expect(results).to eq(
+        'a' => 1,
+        'b' => 'b'
+      )
+
+      expect(cache.read('b')).to be_nil
+      expect(cache.read('b', namespace: 'alph')).not_to be_nil
     end
   end
 

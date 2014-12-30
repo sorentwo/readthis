@@ -88,15 +88,10 @@ module Readthis
     #   cache.write('some-key', 'lives elsehwere', namespace: 'cache') # => 'OK'
     #
     def write(key, value, options = {})
-      options    = merged_options(options)
-      namespaced = namespaced_key(key, options)
+      options = merged_options(options)
 
       invoke(:write, key) do |store|
-        if expiration = options[:expires_in]
-          store.setex(namespaced, expiration, entity.dump(value))
-        else
-          store.set(namespaced, entity.dump(value))
-        end
+        write_entity(key, value, store, options)
       end
     end
 
@@ -196,6 +191,10 @@ module Readthis
     #   cache.fetch_multi('alpha', 'beta') do |key|
     #     "#{key}-was-missing"
     #   end
+    #
+    #   cache.fetch_multi('a', 'b', expires_in: 60) do |key|
+    #     key * 2
+    #   end
     def fetch_multi(*keys)
       results = read_multi(*keys)
       options = merged_options(extract_options!(keys))
@@ -204,8 +203,8 @@ module Readthis
         store.pipelined do
           results.each do |key, value|
             if value.nil?
-              value = yield key
-              write(key, value, options)
+              value = yield(key)
+              write_entity(key, value, store, options)
               results[key] = value
             end
           end
@@ -223,6 +222,18 @@ module Readthis
 
     def clear
       invoke(:clear, '*', &:flushdb)
+    end
+
+    protected
+
+    def write_entity(key, value, store, options)
+      namespaced = namespaced_key(key, options)
+
+      if expiration = options[:expires_in]
+        store.setex(namespaced, expiration, entity.dump(value))
+      else
+        store.set(namespaced, entity.dump(value))
+      end
     end
 
     private
