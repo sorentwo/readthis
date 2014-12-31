@@ -1,3 +1,12 @@
+## v0.5.1 2014-12-30
+
+- Fixed: The `clear` method now accepts an argument for compatibility with other
+  caches. The argument is not actually used for anything.
+- Changed: The `delete` method will always return a boolean value rather than an
+  integer.
+- Changed: Avoid multiple instrumentation calls and pool checkouts within
+  `fetch_multi` calls.
+
 ## v0.5.0 2014-12-12
 
 - Added: All read and write operations are marshalled to and from storage. This
