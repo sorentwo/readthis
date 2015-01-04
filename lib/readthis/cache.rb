@@ -113,6 +113,38 @@ module Readthis
       end
     end
 
+    # Fetches data from the cache, using the given key. If there is data in the
+    # cache with the given key, then that data is returned.
+    #
+    # If there is no such data in the cache (a cache miss), then `nil` will be
+    # returned. However, if a block has been passed, that block will be passed
+    # the key and executed in the event of a cache miss. The return value of
+    # the block will be written to the cache under the given cache key, and
+    # that return value will be returned.
+    #
+    # @param [String] Key for lookup
+    # @param [Block] Optional block for generating the value when missing
+    # @param options [Hash] Optional overrides
+    # @option options [Boolean] :force Force a cache miss
+    #
+    # @example Typical
+    #
+    #   cache.write('today', 'Monday')
+    #   cache.fetch('today') # => "Monday"
+    #   cache.fetch('city')  # => nil
+    #
+    # @example With a block
+    #
+    #   cache.fetch('city') do
+    #     'Duckburgh'
+    #   end
+    #   cache.fetch('city')   # => "Duckburgh"
+    #
+    # @example Cache Miss
+    #
+    #   cache.write('today', 'Monday')
+    #   cache.fetch('today', force: true) # => nil
+    #
     def fetch(key, options = {})
       value = read(key, options) unless options[:force]
 
@@ -166,6 +198,20 @@ module Readthis
       end
     end
 
+    # Read multiple values at once from the cache. Options can be passed in the
+    # last argument.
+    #
+    # @overload read_multi(keys)
+    #   Return all values for the given keys.
+    #   @param [String] One or more keys to fetch
+    #
+    # @return [Hash] A hash mapping keys to the values found.
+    #
+    # @example
+    #
+    #   cache.write('a', 1)
+    #   cache.read_multi('a', 'b') # => { 'a' => 1, 'b' => nil }
+    #
     def read_multi(*keys)
       options = merged_options(extract_options!(keys))
       mapping = keys.map { |key| namespaced_key(key, options) }
@@ -182,7 +228,7 @@ module Readthis
     # executed atomically.
     #
     # @overload fetch_multi(keys)
-    #   Return all values fro the given keys, applying the block to the key
+    #   Return all values for the given keys, applying the block to the key
     #   when a value is missing.
     #   @param [String] One or more keys to fetch
     #
@@ -195,6 +241,7 @@ module Readthis
     #   cache.fetch_multi('a', 'b', expires_in: 60) do |key|
     #     key * 2
     #   end
+    #
     def fetch_multi(*keys)
       results = read_multi(*keys)
       options = merged_options(extract_options!(keys))
