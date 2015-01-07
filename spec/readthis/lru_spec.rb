@@ -34,6 +34,32 @@ RSpec.describe Readthis::LRU do
     end
   end
 
+  describe '#mget' do
+    it 'returns a collection keys mapped to values' do
+      lru = Readthis::LRU.new
+      lru.set('a', 'a')
+      lru.set('b', 'b')
+      lru.set('c', 'c')
+
+      expect(lru.mget(['a', 'b', 'c', 'd'])).to eq(
+        'a' => 'a',
+        'b' => 'b',
+        'c' => 'c',
+        'd' => nil
+      )
+    end
+  end
+
+  describe '#exists?' do
+    it 'is true when the value exists' do
+      lru = Readthis::LRU.new
+
+      expect(lru.exists?('key')).to be_falsey
+      lru.set('key', 'value')
+      expect(lru.exists?('key')).to be_truthy
+    end
+  end
+
   describe '#clear' do
     it 'clears all values from the cache' do
       lru = Readthis::LRU.new
