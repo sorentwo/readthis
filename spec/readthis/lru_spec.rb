@@ -21,6 +21,19 @@ RSpec.describe Readthis::LRU do
     end
   end
 
+  describe '#get' do
+    it 'does not fetch expired entries' do
+      lru = Readthis::LRU.new
+
+      lru.set('key', 'value', 1)
+
+      expect(lru.get('key')).to eq('value')
+      sleep 1.1
+      expect(lru.get('key')).to be_nil
+      expect(lru.count).to be_zero
+    end
+  end
+
   describe '#clear' do
     it 'clears all values from the cache' do
       lru = Readthis::LRU.new

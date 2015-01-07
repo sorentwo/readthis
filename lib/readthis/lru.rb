@@ -1,5 +1,6 @@
-# Least Recently Used cache inspired by lru_redux:
-# https://github.com/SamSaffron/lru_redux
+# Least Recently Used cache that respects entry expiration.
+#
+# Original implementation inspired by SamSaffron/lru_redux
 module Readthis
   class LRU
     DEFAULT_MAX = 1024
@@ -16,21 +17,26 @@ module Readthis
       @data = {}
     end
 
-    # Get the value at `key`. Returns `nil` if nothing exists.
+    # Get the value at `key`. Returns `nil` if nothing exists or the entry has
+    # expired. This method has the intended side effect of evicting expired
+    # cache entries, it is *not* a pure accessor.
     #
     # @param [String] Key used for lookup
     #
     # @example
     #
-    #   lru.get('fake') # => nil
-    #   lru.get('real') # => 'real value'
+    #   lru.get('fake')    # => nil
+    #   lru.get('real')    # => 'real value'
+    #   lru.get('expired') # => nil
     #
     def get(key)
-      found = true
-      value = data.delete(key) { found = false }
+      found  = true
+      entry  = data.delete(key) { found = false }
+      found &= fresh?(entry)
 
       if found
-        data[key] = value
+        data[key] = entry
+        entry[1]
       end
     end
 
@@ -38,17 +44,21 @@ module Readthis
     # value to the top of the cache, preventing it from being dropped
     # out.
     #
+    # Entries will remain in the store even when expired
+    #
     # @param [String] Key used for lookup
     # @param [Object] Any object to store
+    # @param [Number] An optional `ttl` value, in seconds
     #
     # @example
     #
-    #   lru.set('key', 'value') # => 'value'
+    #   lru.set('key', 'value')       # => 'value'
+    #   lru.set('key', 'value', 3600) # => 'value'
     #
-    def set(key, value)
+    def set(key, value, ttl = nil)
       data.delete(key)
-      data[key] = value
-      data.delete(data.first[0]) if data.length > max
+      data[key] = [expiration(ttl), value]
+      data.shift if data.length > max
 
       value
     end
@@ -86,7 +96,19 @@ module Readthis
     #   lru.to_a # => [['a', 1], ['b', 2]]
     #
     def to_a
-      data.to_a.reverse!
+      data.map { |(key, entry)| [key, entry[1]] }.reverse!
+    end
+
+    private
+
+    def expiration(ttl)
+      Time.now.to_i + ttl unless ttl.nil?
+    end
+
+    def fresh?(entry)
+      expiration = entry[0]
+
+      expiration.nil? || expiration > Time.now.to_i
     end
   end
 end
