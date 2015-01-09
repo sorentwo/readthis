@@ -247,13 +247,11 @@ module Readthis
       options = merged_options(extract_options!(keys))
 
       invoke(:fetch_multi, keys) do |store|
-        store.pipelined do
-          results.each do |key, value|
-            if value.nil?
-              value = yield(key)
-              write_entity(key, value, store, options)
-              results[key] = value
-            end
+        results.each do |key, value|
+          if value.nil?
+            value = yield(key)
+            write_entity(key, value, store, options)
+            results[key] = value
           end
         end
 
