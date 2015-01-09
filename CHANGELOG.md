@@ -1,3 +1,9 @@
+## v0.5.2 2015-01-09
+
+- Fixed: Remove the `pipeline` around `fetch_multi` writing. This will slow down
+  `fetch_multi` in cache miss situations for now. It prevents a difficult to
+  track down exception in multi-threaded situations.
+
 ## v0.5.1 2014-12-30
 
 - Fixed: The `clear` method now accepts an argument for compatibility with other
