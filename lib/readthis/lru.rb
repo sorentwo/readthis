@@ -56,6 +56,22 @@ module Readthis
       end
     end
 
+    # Set multiple entries at once. There is no guarantee on what is
+    # returned. Internally uses `set`, so all keys are promoted as
+    # expected.
+    #
+    # @param [Hash] Hash of key/values to set
+    #
+    # @example
+    #
+    #   lru.mset('a' => 1, 'b' => 2) # => true
+    #
+    def mset(hash)
+      hash.each do |key, value|
+        set(key, value)
+      end
+    end
+
     # Set the given `key` to the provided `value`. This will bump the
     # value to the top of the cache, preventing it from being dropped
     # out.

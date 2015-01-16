@@ -50,6 +50,16 @@ RSpec.describe Readthis::LRU do
     end
   end
 
+  describe '#mset' do
+    it 'sets the values of a hash to the keys' do
+      lru = Readthis::LRU.new
+      lru.mset('a' => 1, 'b' => 2)
+
+      expect(lru.get('a')).to eq(1)
+      expect(lru.get('b')).to eq(2)
+    end
+  end
+
   describe '#exists?' do
     it 'is true when the value exists' do
       lru = Readthis::LRU.new
