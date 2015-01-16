@@ -146,6 +146,23 @@ RSpec.describe Readthis::Cache do
     end
   end
 
+  describe '#write_multi' do
+    it 'writes multiple key value pairs simultaneously' do
+      response = cache.write_multi('a', 1, 'b', 2)
+
+      expect(response).to be_truthy
+      expect(cache.read('a')).to eq(1)
+      expect(cache.read('b')).to eq(2)
+    end
+
+    it 'respects passed options' do
+      cache.write_multi('a', 1, 'b', 2, namespace: 'multi')
+
+      expect(cache.read('a')).to be_nil
+      expect(cache.read('a', namespace: 'multi')).to eq(1)
+    end
+  end
+
   describe '#fetch_multi' do
     it 'reads multiple values, filling in missing keys from a block' do
       cache.write('a', 1)
