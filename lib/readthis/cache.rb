@@ -223,6 +223,31 @@ module Readthis
       end
     end
 
+    # Write multiple key value pairs simultaneously. This is an atomic
+    # operation that will always succeed and will overwrite existing
+    # values.
+    #
+    # This is a non-standard, but useful, cache method.
+    #
+    # @param [Hash] Key value hash to write
+    # @param [Hash] Optional overrides
+    #
+    # @example
+    #
+    #   cache.write_multi('a', 1, 'b', 2) # => true
+    #
+    def write_multi(hash, options = {})
+      options = merged_options(options)
+      values  = hash.each_with_object([]) do |(key, value), memo|
+        memo << namespaced_key(key, options)
+        memo << entity.dump(value)
+      end
+
+      invoke(:write_multi, values) do |store|
+        store.mset(values)
+      end
+    end
+
     # Fetches multiple keys from the cache using a single call to the server
     # and filling in any cache misses. All read and write operations are
     # executed atomically.
@@ -243,20 +268,23 @@ module Readthis
     #   end
     #
     def fetch_multi(*keys)
-      results = read_multi(*keys)
-      options = merged_options(extract_options!(keys))
+      results   = read_multi(*keys)
+      extracted = extract_options!(keys)
+      missing   = {}
 
       invoke(:fetch_multi, keys) do |store|
         results.each do |key, value|
           if value.nil?
             value = yield(key)
-            write_entity(key, value, store, options)
+            missing[key] = value
             results[key] = value
           end
         end
-
-        results
       end
+
+      write_multi(missing, extracted) if missing.any?
+
+      results
     end
 
     # Returns `true` if the cache contains an entry for the given key.
