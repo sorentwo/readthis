@@ -148,7 +148,7 @@ RSpec.describe Readthis::Cache do
 
   describe '#write_multi' do
     it 'writes multiple key value pairs simultaneously' do
-      response = cache.write_multi('a', 1, 'b', 2)
+      response = cache.write_multi('a' => 1, 'b' => 2)
 
       expect(response).to be_truthy
       expect(cache.read('a')).to eq(1)
@@ -156,7 +156,7 @@ RSpec.describe Readthis::Cache do
     end
 
     it 'respects passed options' do
-      cache.write_multi('a', 1, 'b', 2, namespace: 'multi')
+      cache.write_multi({ 'a' => 1, 'b' => 2 }, namespace: 'multi')
 
       expect(cache.read('a')).to be_nil
       expect(cache.read('a', namespace: 'multi')).to eq(1)
