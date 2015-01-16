@@ -268,20 +268,23 @@ module Readthis
     #   end
     #
     def fetch_multi(*keys)
-      results = read_multi(*keys)
-      options = merged_options(extract_options!(keys))
+      results   = read_multi(*keys)
+      extracted = extract_options!(keys)
+      missing   = {}
 
       invoke(:fetch_multi, keys) do |store|
         results.each do |key, value|
           if value.nil?
             value = yield(key)
-            write_entity(key, value, store, options)
+            missing[key] = value
             results[key] = value
           end
         end
-
-        results
       end
+
+      write_multi(missing, extracted) if missing.any?
+
+      results
     end
 
     # Returns `true` if the cache contains an entry for the given key.
