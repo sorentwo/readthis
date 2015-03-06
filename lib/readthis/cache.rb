@@ -214,6 +214,7 @@ module Readthis
     #
     def read_multi(*keys)
       options = merged_options(extract_options!(keys))
+      return {} if keys.empty?
       mapping = keys.map { |key| namespaced_key(key, options) }
 
       invoke(:read_multi, keys) do |store|
