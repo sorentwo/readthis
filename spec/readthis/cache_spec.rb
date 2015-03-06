@@ -144,6 +144,10 @@ RSpec.describe Readthis::Cache do
         'e' => 2,
       )
     end
+
+    it 'returns {} with no keys' do
+      expect(cache.read_multi(namespace: 'cache')).to eq({})
+    end
   end
 
   describe '#write_multi' do
@@ -191,6 +195,11 @@ RSpec.describe Readthis::Cache do
 
       expect(cache.read('b')).to be_nil
       expect(cache.read('b', namespace: 'alph')).not_to be_nil
+    end
+
+    it 'return empty results without keys' do
+      results = cache.fetch_multi(namespace: 'alph') { |key| key }
+      expect(results).to eq({})
     end
   end
 
