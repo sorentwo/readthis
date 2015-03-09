@@ -80,16 +80,17 @@ Readthis uses Ruby's `Marshal` module for dumping and loading all values by
 default. This isn't always the fastest option, depending on your use case it may
 be desirable to use a faster but less flexible marshaller.
 
-Use Oj for JSON marshalling, extremely fast, limited types:
+Use Oj for JSON marshalling, extremely fast, but supports limited types:
 
 ```ruby
-Readthis::Cache.new(marshal: Oj)
+Readthis::Cache.new(url, marshal: Oj)
 ```
 
-If you don't mind everything being a string then use the Passthrough marshal:
+If you don't mind everything handles as a string then use the pass-through
+marshaller:
 
 ```ruby
-Readthis::Cache.new(marshal: Readthis::Passthrough)
+Readthis::Cache.new(url, marshal: Readthis::Passthrough)
 ```
 
 ## Differences
