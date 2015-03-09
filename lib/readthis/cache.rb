@@ -214,8 +214,9 @@ module Readthis
     #
     def read_multi(*keys)
       options = merged_options(extract_options!(keys))
-      return {} if keys.empty?
       mapping = keys.map { |key| namespaced_key(key, options) }
+
+      return {} if keys.empty?
 
       invoke(:read_multi, keys) do |store|
         values = store.mget(mapping).map { |value| entity.load(value) }
