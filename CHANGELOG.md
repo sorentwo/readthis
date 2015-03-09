@@ -1,3 +1,12 @@
+## v0.6.0 2015-03-09
+
+- Fixed: Safely handle calling `read_multi` without any keys. [Michael Rykov]
+- Fixed: Pointed `redis-activesupport` at master. Only effected development and
+  testing.
+- Added: A `write_multi` method is no available to bulk set keys and values. It
+  is used by `fetch_multi` internally to ensure that there are at most two Redis
+  calls.
+
 ## v0.5.2 2015-01-09
 
 - Fixed: Remove the `pipeline` around `fetch_multi` writing. This will slow down
