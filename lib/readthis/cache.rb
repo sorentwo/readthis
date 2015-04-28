@@ -236,17 +236,15 @@ module Readthis
     #
     # @example
     #
-    #   cache.write_multi('a', 1, 'b', 2) # => true
+    #   cache.write_multi({ 'a' => 1, 'b' => 2 }) # => true
     #
     def write_multi(hash, options = {})
       options = merged_options(options)
-      values  = hash.each_with_object([]) do |(key, value), memo|
-        memo << namespaced_key(key, options)
-        memo << entity.dump(value)
-      end
 
-      invoke(:write_multi, values) do |store|
-        store.mset(values)
+      invoke(:write_multi, hash.keys) do |store|
+        store.multi do
+          hash.each { |key, value| write_entity(key, value, store, options) }
+        end
       end
     end
 

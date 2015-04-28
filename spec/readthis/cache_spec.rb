@@ -160,10 +160,12 @@ RSpec.describe Readthis::Cache do
     end
 
     it 'respects passed options' do
-      cache.write_multi({ 'a' => 1, 'b' => 2 }, namespace: 'multi')
+      cache.write_multi({ 'a' => 1, 'b' => 2 }, namespace: 'multi', expires_in: 1)
 
       expect(cache.read('a')).to be_nil
       expect(cache.read('a', namespace: 'multi')).to eq(1)
+      sleep 1.01
+      expect(cache.read('a', namespace: 'multi')).to be_nil
     end
   end
 
