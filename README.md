@@ -35,7 +35,7 @@ rails environment config:
 
 ```ruby
 config.cache_store = :readthis_store, ENV.fetch('REDIS_URL'), {
-  expires_in: 2.weeks,
+  expires_in: 2.weeks.to_i,
   namespace: 'cache'
 }
 ```
@@ -45,7 +45,7 @@ Otherwise you can use it anywhere, without any reliance on ActiveSupport:
 ```ruby
 require 'readthis'
 
-cache = Readthis::Cache.new(ENV.fetch('REDIS_URL'), expires_in: 2.weeks)
+cache = Readthis::Cache.new(ENV.fetch('REDIS_URL'), expires_in: 2.weeks.to_i)
 ```
 
 You'll want to use a specific database for caching, just in case you need to
@@ -55,6 +55,11 @@ redis database, which defaults to 0. For example, using database 2:
 ```bash
 REDIS_URL=redis://localhost:6379/2
 ```
+
+Be sure to use an integer value when setting expiration time. The default
+representation of `ActiveSupport::Duration` values won't work when setting
+expiration time, which will cause all keys to have `-1` as the TTL. Expiration
+values are always cast as an integer on write.
 
 [store]: http://api.rubyonrails.org/classes/ActiveSupport/Cache/Store.html
 

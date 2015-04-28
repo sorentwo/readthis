@@ -42,7 +42,7 @@ module Readthis
     #
     def initialize(url, options = {})
       @expires_in = options.fetch(:expires_in, nil)
-      @namespace  = options.fetch(:namespace,  nil)
+      @namespace  = options.fetch(:namespace, nil)
 
       @entity = Readthis::Entity.new(
         marshal:   options.fetch(:marshal, Marshal),
@@ -323,7 +323,7 @@ module Readthis
       namespaced = namespaced_key(key, options)
 
       if expiration = options[:expires_in]
-        store.setex(namespaced, expiration, entity.dump(value))
+        store.setex(namespaced, expiration.to_i, entity.dump(value))
       else
         store.set(namespaced, entity.dump(value))
       end
