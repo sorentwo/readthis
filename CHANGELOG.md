@@ -1,3 +1,9 @@
+## v0.6.1 2015-04-28
+
+- Changed: Expiration values are always cast to an integer before use in write
+  operations. This prevents subtle ActiveSupport bugs where the value would be
+  ignored by `setex`.
+
 ## v0.6.0 2015-03-09
 
 - Fixed: Safely handle calling `read_multi` without any keys. [Michael Rykov]
