@@ -1,3 +1,8 @@
+## v0.6.2 2015-04-28
+
+- Fixed: Set expiration during `write_multi`, primarily effecting `fetch_multi`.
+  This fixes the real issue underlying the change in `v0.6.1`.
+
 ## v0.6.1 2015-04-28
 
 - Changed: Expiration values are always cast to an integer before use in write
