@@ -19,7 +19,7 @@ readthis_ruby = Readthis::Cache.new(REDIS_URL, OPTIONS.merge(marshal: Marshal))
 HASH = ('a'..'z').each_with_object({}) { |key, memo| memo[key] = key }
 
 Benchmark.ips do |x|
-  x.report('pass:hash:dump') { readthis_oj.write('pass',   HASH) }
+  x.report('pass:hash:dump') { readthis_pass.write('pass', HASH) }
   x.report('oj:hash:dump')   { readthis_oj.write('oj',     HASH) }
   x.report('json:hash:dump') { readthis_json.write('json', HASH) }
   x.report('ruby:hash:dump') { readthis_ruby.write('ruby', HASH) }
@@ -28,7 +28,7 @@ Benchmark.ips do |x|
 end
 
 Benchmark.ips do |x|
-  x.report('pass:hash:load') { readthis_oj.read('pass') }
+  x.report('pass:hash:load') { readthis_pass.read('pass') }
   x.report('oj:hash:load')   { readthis_oj.read('oj') }
   x.report('json:hash:load') { readthis_json.read('json') }
   x.report('ruby:hash:load') { readthis_ruby.read('ruby') }
