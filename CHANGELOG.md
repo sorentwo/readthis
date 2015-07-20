@@ -1,3 +1,9 @@
+## v0.7.0 Unreleased
+
+- Changed: There is no longer a hard dependency on `hiredis`, though it is the
+  default. The redis driver can be configured by passing a `driver: :ruby`
+  option through to the constructor.
+
 ## v0.6.2 2015-04-28
 
 - Fixed: Set expiration during `write_multi`, primarily effecting `fetch_multi`.

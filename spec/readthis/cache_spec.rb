@@ -22,6 +22,24 @@ RSpec.describe Readthis::Cache do
     end
   end
 
+  describe '#pool' do
+    it 'creates a new redis connection with hiredis' do
+      cache = Readthis::Cache.new(url)
+
+      cache.pool.with do |client|
+        expect(client.client.driver).to be(Redis::Connection::Hiredis)
+      end
+    end
+
+    it 'creates a new redis connection with a custom driver' do
+      cache = Readthis::Cache.new(url, driver: :ruby)
+
+      cache.pool.with do |client|
+        expect(client.client.driver).to be(Redis::Connection::Ruby)
+      end
+    end
+  end
+
   describe '#write' do
     it 'stores strings in the cache' do
       cache.write('some-key', 'some-value')
