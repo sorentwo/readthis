@@ -6,10 +6,10 @@ module Readthis
 
     attr_reader :marshal, :compression, :threshold
 
-    def initialize(marshal: Marshal, compress: false, threshold: DEFAULT_THRESHOLD)
-      @marshal     = marshal
-      @compression = compress
-      @threshold   = threshold
+    def initialize(options = {})
+      @marshal     = options.fetch(:marshal, Marshal)
+      @compression = options.fetch(:compress, false)
+      @threshold   = options.fetch(:threshold, DEFAULT_THRESHOLD)
     end
 
     def dump(value)

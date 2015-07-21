@@ -1,5 +1,8 @@
 ## v0.7.0 Unreleased
 
+- Changed: Entity initialization uses an options hash rather than keyword
+  arguments. This allows flexibility with older Ruby versions (1.9) that aren't
+  officially supported.
 - Changed: There is no longer a hard dependency on `hiredis`, though it is the
   default. The redis driver can be configured by passing a `driver: :ruby`
   option through to the constructor.
