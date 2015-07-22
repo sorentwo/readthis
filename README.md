@@ -1,7 +1,7 @@
 [![Gem Version](https://badge.fury.io/rb/readthis.svg)](http://badge.fury.io/rb/readthis)
 [![Build Status](https://travis-ci.org/sorentwo/readthis.svg?branch=master)](https://travis-ci.org/sorentwo/readthis)
 [![Code Climate](https://codeclimate.com/github/sorentwo/readthis/badges/gpa.svg)](https://codeclimate.com/github/sorentwo/readthis)
-[![Coverage Status](https://img.shields.io/coveralls/sorentwo/readthis.svg)](https://coveralls.io/r/sorentwo/readthis?branch=master)
+[![Coverage Status](https://coveralls.io/repos/sorentwo/readthis/badge.svg?branch=master&service=github)](https://coveralls.io/github/sorentwo/readthis?branch=master)
 
 # Readthis
 
