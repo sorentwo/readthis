@@ -5,16 +5,15 @@
 
 # Readthis
 
-Readthis is a drop in replacement for any ActiveSupport compliant cache, but
-emphasizes performance and simplicity. It takes some cues from Dalli (connection
-pooling), the popular Memcache client.
+Readthis is a drop in replacement for any ActiveSupport compliant cache. It
+emphasizes performance and simplicity and takes some cues from Dalli the popular
+Memcache client.
 
-For any new projects there isn't any reason to stick with Memcached. Redis is
-as fast, if not faster in many scenarios, and is far more likely to be used
-elsewhere in the stack. See [this Stack Overflow post][stackoverflow] for more
-details.
+For new projects there isn't any reason to stick with Memcached. Redis is as
+fast, if not faster in many scenarios, and is far more likely to be used
+elsewhere in the stack. See [this blog post][hp-caching] for more details.
 
-[stackoverflow]: http://stackoverflow.com/questions/10558465/memcache-vs-redis
+[hp-caching]: http://sorentwo.com/2015/07/20/high-performance-caching-with-readthis.html
 
 ## Footprint & Performance
 
@@ -31,7 +30,7 @@ gem 'readthis'
 ## Usage
 
 Use it the same way as any other [ActiveSupport::Cache::Store][store]. Within a
-rails environment config:
+Rails environment config:
 
 ```ruby
 config.cache_store = :readthis_store, ENV.fetch('REDIS_URL'), {
@@ -40,7 +39,7 @@ config.cache_store = :readthis_store, ENV.fetch('REDIS_URL'), {
 }
 ```
 
-Otherwise you can use it anywhere, without any reliance on ActiveSupport:
+Otherwise you can use it anywhere, without any reliance on `ActiveSupport`:
 
 ```ruby
 require 'readthis'
@@ -48,20 +47,33 @@ require 'readthis'
 cache = Readthis::Cache.new(ENV.fetch('REDIS_URL'), expires_in: 2.weeks.to_i)
 ```
 
-You'll want to use a specific database for caching, just in case you need to
-clear the cache entirely. Appending a number between 0 and 15 will specify the
-redis database, which defaults to 0. For example, using database 2:
+[store]: http://api.rubyonrails.org/classes/ActiveSupport/Cache/Store.html
+
+### Instances & Databases
+
+An isolated Redis instance that is only used for caching is ideal. Dedicated
+instances have numerous benefits like: more predictable performance, avoiding
+expires in favor of LRU, and tuning the persistence mechanism. See [Optimizing
+Redis Usage for Caching][optimizing-usage] for more details.
+
+[optimizing-usage]: http://sorentwo.com/2015/07/27/optimizing-redis-usage-for-caching.html
+
+At the very least you'll want to use a specific database for caching. In the
+event the database needs to be purged you can do so with a single `clear`
+command, rather than finding all keys in a namespace and deleting them.
+Appending a number between 0 and 15 will specify the redis database, which
+defaults to 0. For example, using database 2:
 
 ```bash
 REDIS_URL=redis://localhost:6379/2
 ```
 
+### Expiration
+
 Be sure to use an integer value when setting expiration time. The default
 representation of `ActiveSupport::Duration` values won't work when setting
 expiration time, which will cause all keys to have `-1` as the TTL. Expiration
 values are always cast as an integer on write.
-
-[store]: http://api.rubyonrails.org/classes/ActiveSupport/Cache/Store.html
 
 ### Compression
 
@@ -82,8 +94,8 @@ config.cache_store = :readthis_store, ENV.fetch('REDIS_URL'), {
 ### Marshalling
 
 Readthis uses Ruby's `Marshal` module for dumping and loading all values by
-default. This isn't always the fastest option, depending on your use case it may
-be desirable to use a faster but less flexible marshaller.
+default. This isn't always the fastest option, and depending on your use case it
+may be desirable to use a faster but less flexible marshaller.
 
 Use Oj for JSON marshalling, extremely fast, but supports limited types:
 
@@ -91,8 +103,8 @@ Use Oj for JSON marshalling, extremely fast, but supports limited types:
 Readthis::Cache.new(url, marshal: Oj)
 ```
 
-If you don't mind everything handles as a string then use the pass-through
-marshaller:
+If all cached data can safely be represented as a string then use the
+pass-through marshaller:
 
 ```ruby
 Readthis::Cache.new(url, marshal: Readthis::Passthrough)
@@ -102,6 +114,14 @@ Readthis::Cache.new(url, marshal: Readthis::Passthrough)
 
 Readthis supports all of standard cache methods except for the following:
 
-* `cleanup` - redis does this with ttl for us already
+* `cleanup` - Redis does this with TTL or LRU already.
 * `delete_matched` - you really don't want to perform key matching operations
-  in redis. They are linear time and only support basic globbing.
+  in Redis. They are linear time and only support basic globbing.
+
+## Contributing
+
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
