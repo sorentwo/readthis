@@ -1,4 +1,4 @@
-## v0.7.0 Unreleased
+## v0.7.0 2015-08-11
 
 - Changed: Entity initialization uses an options hash rather than keyword
   arguments. This allows flexibility with older Ruby versions (1.9) that aren't
