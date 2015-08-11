@@ -10,4 +10,5 @@ group :benchmarking do
   gem 'oj'
   gem 'msgpack'
   gem 'redis-activesupport'
+  gem 'stackprof'
 end
