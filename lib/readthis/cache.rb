@@ -30,6 +30,7 @@ module Readthis
     # @option [Number] :expires_in The number of seconds until an entry expires
     # @option [Module] :marshal (Marshal) Any module that responds to `dump` and `load`
     # @option [String] :namespace Prefix used to namespace entries
+    # @option [Symbol] :driver (:hiredis) Specify a driver to be used for Redis connections
     # @option [Number] :pool_size (5) The number of threads in the pool
     # @option [Number] :pool_timeout (5) How long before a thread times out
     #
