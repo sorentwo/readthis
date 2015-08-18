@@ -14,7 +14,7 @@ module Readthis
     # ActiveSupport::Notifications available, but needs to work even when it
     # isn't.
     def self.notifications
-      if Object.const_defined?('ActiveSupport::Notifications')
+      if defined?(ActiveSupport::Notifications)
         ActiveSupport::Notifications
       else
         Readthis::Notifications
