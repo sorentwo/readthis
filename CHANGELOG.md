@@ -1,3 +1,11 @@
+## Unreleased
+
+- Changed: The `hiredis` driver is *no longer the default*. In order to use the
+  vastly faster `hiredis` driver you need to pass it in during construction.
+  See [readthis#9][issue-9] for more discussion.
+
+[issue-9]: https://github.com/sorentwo/readthis/issues/9
+
 ## v0.7.0 2015-08-11
 
 - Changed: Entity initialization uses an options hash rather than keyword

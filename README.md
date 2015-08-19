@@ -25,6 +25,7 @@ Add this line to your application's Gemfile:
 
 ```ruby
 gem 'readthis'
+gem 'hiredis' # Highly recommended
 ```
 
 ## Usage
@@ -35,7 +36,8 @@ Rails environment config:
 ```ruby
 config.cache_store = :readthis_store, ENV.fetch('REDIS_URL'), {
   expires_in: 2.weeks.to_i,
-  namespace: 'cache'
+  namespace: 'cache',
+  driver: :hiredis
 }
 ```
 
@@ -110,12 +112,12 @@ pass-through marshaller:
 Readthis::Cache.new(url, marshal: Readthis::Passthrough)
 ```
 
-## Differences
+## Differences From ActiveSupport::Cache
 
 Readthis supports all of standard cache methods except for the following:
 
 * `cleanup` - Redis does this with TTL or LRU already.
-* `delete_matched` - you really don't want to perform key matching operations
+* `delete_matched` - You really don't want to perform key matching operations
   in Redis. They are linear time and only support basic globbing.
 
 ## Contributing
