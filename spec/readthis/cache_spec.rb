@@ -1,8 +1,7 @@
 require 'readthis/cache'
 
 RSpec.describe Readthis::Cache do
-  let(:url)   { 'redis://localhost:6379/11' }
-  let(:cache) { Readthis::Cache.new(url) }
+  let(:cache) { Readthis::Cache.new }
 
   after do
     cache.clear
@@ -10,29 +9,21 @@ RSpec.describe Readthis::Cache do
 
   describe '#initialize' do
     it 'accepts and persists a namespace' do
-      cache = Readthis::Cache.new(url, namespace: 'kash')
+      cache = Readthis::Cache.new(namespace: 'kash')
 
       expect(cache.namespace).to eq('kash')
     end
 
     it 'accepts and persists an expiration' do
-      cache = Readthis::Cache.new(url, expires_in: 10)
+      cache = Readthis::Cache.new(expires_in: 10)
 
       expect(cache.expires_in).to eq(10)
     end
   end
 
   describe '#pool' do
-    it 'creates a new redis connection with' do
-      cache = Readthis::Cache.new(url)
-
-      cache.pool.with do |client|
-        expect(client.client.driver).to be(Redis::Connection::Ruby)
-      end
-    end
-
-    it 'creates a new redis connection with a custom driver' do
-      cache = Readthis::Cache.new(url, driver: :hiredis)
+    it 'uses the passed redis configuration' do
+      cache = Readthis::Cache.new(redis: { driver: :hiredis })
 
       cache.pool.with do |client|
         expect(client.client.driver).to be(Redis::Connection::Hiredis)
@@ -87,8 +78,8 @@ RSpec.describe Readthis::Cache do
 
   describe 'compression' do
     it 'round trips entries when compression is enabled' do
-      com_cache = Readthis::Cache.new(url, compress: true, compression_threshold: 8)
-      raw_cache = Readthis::Cache.new(url)
+      com_cache = Readthis::Cache.new(compress: true, compression_threshold: 8)
+      raw_cache = Readthis::Cache.new
       value = 'enough text that it should be compressed'
 
       com_cache.write('compressed', value)
@@ -98,7 +89,7 @@ RSpec.describe Readthis::Cache do
     end
 
     it 'round trips bulk entries when compression is enabled' do
-      cache = Readthis::Cache.new(url, compress: true, compression_threshold: 8)
+      cache = Readthis::Cache.new(compress: true, compression_threshold: 8)
       value = 'also enough text to compress'
 
       cache.write('comp-a', value)
