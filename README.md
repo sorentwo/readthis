@@ -34,11 +34,10 @@ Use it the same way as any other [ActiveSupport::Cache::Store][store]. Within a
 Rails environment config:
 
 ```ruby
-config.cache_store = :readthis_store, ENV.fetch('REDIS_URL'), {
+config.cache_store = :readthis_store,
   expires_in: 2.weeks.to_i,
   namespace: 'cache',
-  driver: :hiredis
-}
+  redis: { url: ENV.fetch('REDIS_URL'), driver: :hiredis }
 ```
 
 Otherwise you can use it anywhere, without any reliance on `ActiveSupport`:
@@ -46,7 +45,10 @@ Otherwise you can use it anywhere, without any reliance on `ActiveSupport`:
 ```ruby
 require 'readthis'
 
-cache = Readthis::Cache.new(ENV.fetch('REDIS_URL'), expires_in: 2.weeks.to_i)
+cache = Readthis::Cache.new(
+  expires_in: 2.weeks.to_i,
+  redis: { url: ENV.fetch('REDIS_URL') }
+)
 ```
 
 [store]: http://api.rubyonrails.org/classes/ActiveSupport/Cache/Store.html
@@ -87,10 +89,9 @@ means it is safe to enable or change compression with an existing cache. There
 will be a decoding performance penalty in this case, but it should be minor.
 
 ```ruby
-config.cache_store = :readthis_store, ENV.fetch('REDIS_URL'), {
+config.cache_store = :readthis_store,
   compress: true,
   compression_threshold: 2.kilobytes
-}
 ```
 
 ### Marshalling
@@ -102,14 +103,14 @@ may be desirable to use a faster but less flexible marshaller.
 Use Oj for JSON marshalling, extremely fast, but supports limited types:
 
 ```ruby
-Readthis::Cache.new(url, marshal: Oj)
+Readthis::Cache.new(marshal: Oj)
 ```
 
 If all cached data can safely be represented as a string then use the
 pass-through marshaller:
 
 ```ruby
-Readthis::Cache.new(url, marshal: Readthis::Passthrough)
+Readthis::Cache.new(marshal: Readthis::Passthrough)
 ```
 
 ## Differences From ActiveSupport::Cache

@@ -1,5 +1,9 @@
 ## Unreleased
 
+- Breaking: The initializer now takes a single options argument instead of a
+  `url` and `options` separately. This allows the underlying redis client to
+  accept any options, rather than just the driver. For example, it's now
+  possible to use Readthis with sentinel directly through the configuration.
 - Changed: The `hiredis` driver is *no longer the default*. In order to use the
   vastly faster `hiredis` driver you need to pass it in during construction.
   See [readthis#9][issue-9] for more discussion.

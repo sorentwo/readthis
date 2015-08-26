@@ -21,8 +21,7 @@ module Readthis
       end
     end
 
-    # Creates a new Readthis::Cache object with the given redis URL. The URL
-    # is parsed by the redis client directly.
+    # Creates a new Readthis::Cache object with the given options.
     #
     # @option [Hash]    :redis Options that will be passed to the underlying redis connection
     # @option [Boolean] :compress (false) Enable or disable automatic compression
@@ -34,10 +33,10 @@ module Readthis
     # @option [Number]  :pool_timeout (5) How long before a thread times out
     #
     # @example Create a new cache instance
-    #   Readthis::Cache.new('redis://localhost:6379/0', namespace: 'cache')
+    #   Readthis::Cache.new(namespace: 'cache', redis: { url: 'redis://localhost:6379/0' })
     #
     # @example Create a compressed cache instance
-    #   Readthis::Cache.new('redis://localhost:6379/0', compress: true, compression_threshold: 2048)
+    #   Readthis::Cache.new(compress: true, compression_threshold: 2048)
     #
     def initialize(options = {})
       @expires_in = options.fetch(:expires_in, nil)
