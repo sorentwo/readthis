@@ -1,4 +1,4 @@
-## Unreleased
+## v0.8.0 2015-08-26
 
 - Breaking: The initializer now takes a single options argument instead of a
   `url` and `options` separately. This allows the underlying redis client to
