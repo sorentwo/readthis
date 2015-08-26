@@ -9,11 +9,10 @@ require 'active_support/cache/memory_store'
 require 'active_support/cache/dalli_store'
 require 'readthis'
 
-REDIS_URL = 'redis://localhost:6379/11'
-memory    = ActiveSupport::Cache::MemoryStore.new(expires_in: 60, namespace: 'mm')
-dalli     = ActiveSupport::Cache::DalliStore.new('localhost', namespace: 'da', pool_size: 5, expires_in: 60)
-redisas   = ActiveSupport::Cache::RedisStore.new(REDIS_URL + '/ra', expires_in: 60)
-readthis  = Readthis::Cache.new(REDIS_URL, namespace: 'rd', expires_in: 60)
+memory   = ActiveSupport::Cache::MemoryStore.new(expires_in: 60, namespace: 'mm')
+dalli    = ActiveSupport::Cache::DalliStore.new('localhost', namespace: 'da', pool_size: 5, expires_in: 60)
+redisas  = ActiveSupport::Cache::RedisStore.new('redis://localhost:6379/11/ra', expires_in: 60)
+readthis = Readthis::Cache.new(namespace: 'rd', expires_in: 60)
 
 ('a'..'z').each do |key|
   value = key * 1024

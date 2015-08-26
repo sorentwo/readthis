@@ -16,7 +16,6 @@ dalli = ActiveSupport::Cache::DalliStore.new(
 )
 
 readthis  = Readthis::Cache.new(
-  'redis://localhost:6379/11',
   pool_size: 5,
   compressed: true,
   compression_threshold: 128

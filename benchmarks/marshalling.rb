@@ -9,14 +9,13 @@ require 'msgpack'
 require 'readthis'
 require 'readthis/passthrough'
 
-REDIS_URL = 'redis://localhost:6379/11'
-OPTIONS   = { compressed: false }
+OPTIONS = { compressed: false }
 
-readthis_pass    = Readthis::Cache.new(REDIS_URL, OPTIONS.merge(marshal: Readthis::Passthrough))
-readthis_oj      = Readthis::Cache.new(REDIS_URL, OPTIONS.merge(marshal: Oj))
-readthis_msgpack = Readthis::Cache.new(REDIS_URL, OPTIONS.merge(marshal: MessagePack))
-readthis_json    = Readthis::Cache.new(REDIS_URL, OPTIONS.merge(marshal: JSON))
-readthis_ruby    = Readthis::Cache.new(REDIS_URL, OPTIONS.merge(marshal: Marshal))
+readthis_pass    = Readthis::Cache.new(OPTIONS.merge(marshal: Readthis::Passthrough))
+readthis_oj      = Readthis::Cache.new(OPTIONS.merge(marshal: Oj))
+readthis_msgpack = Readthis::Cache.new(OPTIONS.merge(marshal: MessagePack))
+readthis_json    = Readthis::Cache.new(OPTIONS.merge(marshal: JSON))
+readthis_ruby    = Readthis::Cache.new(OPTIONS.merge(marshal: Marshal))
 
 HASH = ('a'..'z').each_with_object({}) { |key, memo| memo[key] = key }
 
