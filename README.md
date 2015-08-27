@@ -34,10 +34,11 @@ Use it the same way as any other [ActiveSupport::Cache::Store][store]. Within a
 Rails environment config:
 
 ```ruby
-config.cache_store = :readthis_store,
+config.cache_store = :readthis_store, {
   expires_in: 2.weeks.to_i,
   namespace: 'cache',
   redis: { url: ENV.fetch('REDIS_URL'), driver: :hiredis }
+}
 ```
 
 Otherwise you can use it anywhere, without any reliance on `ActiveSupport`:
@@ -89,9 +90,10 @@ means it is safe to enable or change compression with an existing cache. There
 will be a decoding performance penalty in this case, but it should be minor.
 
 ```ruby
-config.cache_store = :readthis_store,
+config.cache_store = :readthis_store, {
   compress: true,
   compression_threshold: 2.kilobytes
+}
 ```
 
 ### Marshalling
