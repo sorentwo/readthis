@@ -14,3 +14,4 @@ matrix:
 services:
   - redis-server
 script: bin/rspec
+bundler_args: --without benchmarking
