@@ -39,14 +39,16 @@ TEXT = <<-TEXT
   Caches can also store values in a compressed format to save space and reduce time spent sending data. Since there is overhead, values must be large enough to warrant compression. To turn on compression either pass compress: true in the initializer or as an option to fetch or write. To specify the threshold at which to compress values, set the :compress_threshold option. The default threshold is 16K.
 TEXT
 
-puts 'Compressed Writes:'
+puts 'Compressed Write/Read:'
 Benchmark.ips do |x|
-  x.report 'readthis:write' do
+  x.report 'readthis:write/read' do
     readthis.write(KEY, TEXT)
+    readthis.read(KEY)
   end
 
-  x.report 'dalli:write' do
+  x.report 'dalli:write/read' do
     dalli.write(KEY, TEXT)
+    dalli.read(KEY)
   end
 
   x.compare!
