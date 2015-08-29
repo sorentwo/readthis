@@ -1,3 +1,12 @@
+## Unreleased
+
+- Fixed: Entity compression was broken, it wouldn't unload data when the
+  compressed size was below the compression limit. Data is now decompressed
+  when it can the value looks to be compressed, falling back to the initial
+  value when decompression fails. See [readthis#13][issue-13] for details.
+
+[issue-13]: https://github.com/sorentwo/readthis/pull/13
+
 ## v0.8.0 2015-08-26
 
 - Breaking: The initializer now takes a single options argument instead of a

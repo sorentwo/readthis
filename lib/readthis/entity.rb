@@ -26,7 +26,7 @@ module Readthis
     def load(value)
       return value if value.nil?
 
-      if compress?(value)
+      if compressed?(value)
         decompress(value)
       else
         marshal.load(value)
