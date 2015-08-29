@@ -51,6 +51,15 @@ RSpec.describe Readthis::Entity do
       expect(entity.load(compressed)).not_to eq(string)
     end
 
+    it 'does not fail when compressed data size is below threshold' do
+      # This string has very little entropy thus compression ratio is huge
+      string = 'a' * 200
+      entity = Readthis::Entity.new(compress: true, threshold: 50)
+      # Store and reload the entity will not return the same value
+      # when compressed length is below threshold
+      expect(entity.load(entity.dump(string))).to eq string
+    end
+
     it 'does not try to load a nil value' do
       entity = Readthis::Entity.new
 
