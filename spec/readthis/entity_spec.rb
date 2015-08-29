@@ -25,6 +25,20 @@ RSpec.describe Readthis::Entity do
       expect(entity.dump(string)).not_to eq(dumped)
     end
 
+    it 'does not return compressed data when the size is below threshold' do
+      string = 'a' * 200
+      entity = Readthis::Entity.new(compress: true, threshold: 50)
+
+      expect(entity.load(entity.dump(string))).to eq(string)
+    end
+
+    it 'safely returns incorrectly deduced compressed data' do
+      string = [120, 156, 97, 98, 99].pack('CCCCC')
+      entity = Readthis::Entity.new(compress: true, threshold: 1)
+
+      expect(entity.load(string)).to eq(string)
+    end
+
     it 'does not dump nil values' do
       entity = Readthis::Entity.new
 

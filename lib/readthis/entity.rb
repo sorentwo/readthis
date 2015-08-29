@@ -3,6 +3,7 @@ require 'zlib'
 module Readthis
   class Entity
     DEFAULT_THRESHOLD = 8 * 1024
+    MAGIC_BYTES = [120, 156].freeze
 
     attr_reader :marshal, :compression, :threshold
 
@@ -46,6 +47,10 @@ module Readthis
 
     def compress?(value)
       compression && value.bytesize >= threshold
+    end
+
+    def compressed?(value)
+      compression && value[0, 2].unpack('CC') == MAGIC_BYTES
     end
   end
 end
