@@ -2,51 +2,57 @@ require 'zlib'
 
 module Readthis
   class Entity
-    DEFAULT_THRESHOLD = 8 * 1024
+    DEFAULT_OPTIONS = {
+      compress:  false,
+      marshal:   Marshal,
+      threshold: 8 * 1024
+    }.freeze
+
     MAGIC_BYTES = [120, 156].freeze
 
-    attr_reader :marshal, :compression, :threshold
-
     def initialize(options = {})
-      @marshal     = options.fetch(:marshal, Marshal)
-      @compression = options.fetch(:compress, false)
-      @threshold   = options.fetch(:threshold, DEFAULT_THRESHOLD)
+      @options = DEFAULT_OPTIONS.merge(options)
     end
 
-    def dump(value)
-      if compress?(value)
-        compress(value)
-      else
-        marshal.dump(value)
-      end
+    def dump(value, options = {})
+      marshal   = with_fallback(options, :marshal)
+      threshold = with_fallback(options, :threshold)
+      compress  = with_fallback(options, :compress)
+
+      deflate(marshal.dump(value), compress, threshold)
     end
 
-    def load(value)
-      if compressed?(value)
-        decompress(value)
-      else
-        marshal.load(value)
-      end
-    rescue TypeError, Zlib::Error
+    def load(value, options = {})
+      marshal  = with_fallback(options, :marshal)
+      compress = with_fallback(options, :compress)
+
+      marshal.load(inflate(value, compress))
+    rescue TypeError
       value
-    end
-
-    def compress(value)
-      Zlib::Deflate.deflate(marshal.dump(value))
-    end
-
-    def decompress(value)
-      marshal.load(Zlib::Inflate.inflate(value))
     end
 
     private
 
-    def compress?(value)
-      compression && value.bytesize >= threshold
+    def deflate(value, compress, threshold)
+      if compress && value.bytesize >= threshold
+        Zlib::Deflate.deflate(value)
+      else
+        value
+      end
     end
 
-    def compressed?(value)
-      compression && value[0, 2].unpack('CC') == MAGIC_BYTES
+    def inflate(value, decompress)
+      if decompress && value[0, 2].unpack('CC'.freeze) == MAGIC_BYTES
+        Zlib::Inflate.inflate(value)
+      else
+        value
+      end
+    rescue Zlib::Error
+      value
+    end
+
+    def with_fallback(options, key)
+      options.key?(key) ? options[key] : @options[key]
     end
   end
 end

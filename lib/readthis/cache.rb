@@ -310,7 +310,7 @@ module Readthis
     # @example
     #
     #   cache.clear #=> 'OK'
-    def clear(options = {})
+    def clear(_options = nil)
       invoke(:clear, '*', &:flushdb)
     end
 
