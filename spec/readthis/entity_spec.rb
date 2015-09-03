@@ -39,10 +39,10 @@ RSpec.describe Readthis::Entity do
       expect(entity.load(string)).to eq(string)
     end
 
-    it 'does not dump nil values' do
+    it 'safely roundtrips nil values' do
       entity = Readthis::Entity.new
 
-      expect(entity.dump(nil)).to be_nil
+      expect(entity.load(entity.dump(nil))).to be_nil
     end
   end
 

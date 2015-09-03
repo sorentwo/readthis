@@ -14,8 +14,6 @@ module Readthis
     end
 
     def dump(value)
-      return value if value.nil?
-
       if compress?(value)
         compress(value)
       else
@@ -24,8 +22,6 @@ module Readthis
     end
 
     def load(value)
-      return value if value.nil?
-
       if compressed?(value)
         decompress(value)
       else
