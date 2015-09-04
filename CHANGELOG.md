@@ -1,5 +1,9 @@
 ## Unreleased
 
+- Fixed: Caching `nil` values is now possible. Previously the value would be
+  converted into a blank string, causing a Marshal error when loading the data.
+  There is still some non-standard handling of `nil` within `fetch` or
+  `fetch_multi`, where a cached `nil` value will always result in a cache miss.
 - Fixed: Entity compression was broken, it wouldn't unload data when the
   compressed size was below the compression limit. Data is now decompressed
   when it can the value looks to be compressed, falling back to the initial

@@ -120,8 +120,12 @@ Readthis::Cache.new(marshal: Readthis::Passthrough)
 Readthis supports all of standard cache methods except for the following:
 
 * `cleanup` - Redis does this with TTL or LRU already.
-* `delete_matched` - You really don't want to perform key matching operations
-  in Redis. They are linear time and only support basic globbing.
+* `delete_matched` - You really don't want to perform key matching operations in
+  Redis. They are linear time and only support basic globbing.
+
+Like other `ActiveSupport::Cache` implementations it is possible to cache `nil`
+as a value. However, the fetch methods treat `nil` values as a cache miss and
+re-generate/re-cache the value. Caching `nil` isn't recommended.
 
 ## Contributing
 
