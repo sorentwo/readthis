@@ -1,18 +1,21 @@
-## Unreleased
+## v0.8.1 2015-09-04
 
 - Changed: `Readthis::Cache` now has an accessor for the options that were
   passed during initialization. This is primarily to support the session store
-  middleware provided by `ActionDispatch`.
+  middleware provided by `ActionDispatch`. See [readthis#16][issue-16].
 - Fixed: Caching `nil` values is now possible. Previously the value would be
   converted into a blank string, causing a Marshal error when loading the data.
   There is still some non-standard handling of `nil` within `fetch` or
   `fetch_multi`, where a cached `nil` value will always result in a cache miss.
+  See [readthis#15][issue-15].
 - Fixed: Entity compression was broken, it wouldn't unload data when the
   compressed size was below the compression limit. Data is now decompressed
   when it can the value looks to be compressed, falling back to the initial
   value when decompression fails. See [readthis#13][issue-13] for details.
 
 [issue-13]: https://github.com/sorentwo/readthis/pull/13
+[issue-15]: https://github.com/sorentwo/readthis/pull/15
+[issue-16]: https://github.com/sorentwo/readthis/pull/16
 
 ## v0.8.0 2015-08-26
 
