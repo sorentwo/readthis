@@ -19,6 +19,12 @@ RSpec.describe Readthis::Cache do
 
       expect(cache.expires_in).to eq(10)
     end
+
+    it 'makes options available' do
+      cache = Readthis::Cache.new(namespace: 'cache', expires_in: 1)
+
+      expect(cache.options).to eq(namespace: 'cache', expires_in: 1)
+    end
   end
 
   describe '#pool' do

@@ -1,5 +1,8 @@
 ## Unreleased
 
+- Changed: `Readthis::Cache` now has an accessor for the options that were
+  passed during initialization. This is primarily to support the session store
+  middleware provided by `ActionDispatch`.
 - Fixed: Caching `nil` values is now possible. Previously the value would be
   converted into a blank string, causing a Marshal error when loading the data.
   There is still some non-standard handling of `nil` within `fetch` or
