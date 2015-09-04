@@ -42,7 +42,7 @@ module Readthis
     end
 
     def inflate(value, decompress)
-      if decompress && value[0, 2].unpack('CC'.freeze) == MAGIC_BYTES
+      if decompress && value[0, 2].bytes == MAGIC_BYTES
         Zlib::Inflate.inflate(value)
       else
         value
