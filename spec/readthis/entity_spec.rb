@@ -7,21 +7,21 @@ RSpec.describe Readthis::Entity do
       string = 'some string'
       entity = Readthis::Entity.new
 
-      expect(entity.dump(string)).to eq(Marshal.dump(string))
+      expect(entity.dump(string)).to include(Marshal.dump(string))
     end
 
     it 'marshals using a custom marshaller' do
       string = 'some string'
       entity = Readthis::Entity.new(marshal: JSON)
 
-      expect(entity.dump(string)).to eq(JSON.dump(string))
+      expect(entity.dump(string)).to include(JSON.dump(string))
     end
 
     it 'overrides the marshaller' do
       string = 'still some string'
       entity = Readthis::Entity.new
 
-      expect(entity.dump(string, marshal: JSON)).to eq(JSON.dump(string))
+      expect(entity.dump(string, marshal: JSON)).to include(JSON.dump(string))
     end
 
     it 'applies compression when enabled' do
@@ -78,14 +78,6 @@ RSpec.describe Readthis::Entity do
       expect(entity.load(dumped)).to eq(object)
     end
 
-    it 'unmarshals with a custom marshaller per method call' do
-      object = [1, 2, 3]
-      dumped = JSON.dump(object)
-      entity = Readthis::Entity.new
-
-      expect(entity.load(dumped, marshal: JSON)).to eq(object)
-    end
-
     it 'uncompresses when compression is enabled' do
       string = 'another one of those huge strings'
       entity = Readthis::Entity.new(compress: true, threshold: 4)
@@ -94,10 +86,13 @@ RSpec.describe Readthis::Entity do
       expect(entity.load(dumped)).not_to eq(string)
     end
 
-    it 'does not try to load a nil value' do
-      entity = Readthis::Entity.new
+    it 'uses the dumped value to define load options' do
+      value   = [1, 2, 3]
+      custom  = Readthis::Entity.new(marshal: JSON, compress: true)
+      general = Readthis::Entity.new(marshal: Marshal, compress: false)
+      dumped  = custom.dump(value)
 
-      expect(entity.load(nil)).to be_nil
+      expect(general.load(dumped)).to eq(value)
     end
 
     it 'passes through the value when it fails to marshal' do
@@ -111,6 +106,40 @@ RSpec.describe Readthis::Entity do
       dumped = Marshal.dump('some sizable string')
 
       expect { entity.load(dumped) }.not_to raise_error
+    end
+  end
+
+  describe '#compose' do
+    it 'prepends the string with a formatted marker' do
+      string = 'the quick brown fox'
+      marked = Readthis::Entity.new.compose(string, Marshal, true)
+
+      expect(marked).to include('RDS|Marshal|true|1|RDS')
+      expect(marked).to include(string)
+    end
+  end
+
+  describe '#decompose' do
+    it 'returns extracted options and values' do
+      string = 'the quick brown fox'
+      entity = Readthis::Entity.new
+      marked = entity.compose(string.dup, JSON, true)
+
+      marshal, compress, value = entity.decompose(marked)
+
+      expect(marshal).to eq(JSON)
+      expect(compress).to eq(true)
+      expect(value).to eq(string)
+    end
+
+    it 'returns the original string without a marker' do
+      string = 'the quick brown fox'
+      entity = Readthis::Entity.new
+      marshal, compress, value = entity.decompose(string)
+
+      expect(marshal).to eq(Marshal)
+      expect(compress).to eq(false)
+      expect(value).to eq(string)
     end
   end
 end
