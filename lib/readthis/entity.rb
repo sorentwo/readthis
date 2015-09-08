@@ -33,15 +33,15 @@ module Readthis
     end
 
     def compose(value, marshal, compress)
-      prefix = "|#{marshal.name}|#{compress}|#{MARKER_VERSION}|"
+      prefix = "R|#{marshal.name}|#{compress}|#{MARKER_VERSION}|R"
 
       value.prepend(prefix)
     end
 
     def decompose(marked)
-      if marked[0] == '|'.freeze
-        prefix = marked[0, 32][/\|(.*)\|/, 1]
-        offset = prefix.size + 2
+      if marked && marked[0, 2] == 'R|'.freeze
+        prefix = marked[0, 32].scrub('*'.freeze)[/R\|(.*)\|R/, 1]
+        offset = prefix.size + 4
 
         m_name, c_name, _ = prefix.split('|'.freeze)
 

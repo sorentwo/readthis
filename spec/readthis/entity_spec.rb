@@ -114,7 +114,7 @@ RSpec.describe Readthis::Entity do
       string = 'the quick brown fox'
       marked = Readthis::Entity.new.compose(string, Marshal, true)
 
-      expect(marked).to include('|Marshal|true|1|')
+      expect(marked).to include('R|Marshal|true|1|R')
       expect(marked).to include(string)
     end
   end
@@ -140,6 +140,13 @@ RSpec.describe Readthis::Entity do
       expect(marshal).to eq(Marshal)
       expect(compress).to eq(false)
       expect(value).to eq(string)
+    end
+
+    it 'returns defaults with a nil string' do
+      entity = Readthis::Entity.new
+      marshal, compress, value = entity.decompose(nil)
+
+      expect(value).to eq(nil)
     end
   end
 end
