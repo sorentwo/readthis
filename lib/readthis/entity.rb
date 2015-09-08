@@ -21,11 +21,11 @@ module Readthis
 
       dumped = deflate(marshal.dump(value), compress, threshold)
 
-      Readthis::Marker.compose(dumped, marshal, compress)
+      compose(dumped, marshal, compress)
     end
 
     def load(string)
-      marshal, compress, value = Readthis::Marker.decompose(string)
+      marshal, compress, value = decompose(string)
 
       marshal.load(inflate(value, compress))
     rescue TypeError
@@ -33,15 +33,15 @@ module Readthis
     end
 
     def compose(value, marshal, compress)
-      prefix = "RDS|#{marshal.name}|#{compress}|#{MARKER_VERSION}|RDS"
+      prefix = "|#{marshal.name}|#{compress}|#{MARKER_VERSION}|"
 
       value.prepend(prefix)
     end
 
     def decompose(marked)
-      if marked[0, 3] == 'RDS'.freeze
-        prefix = marked[0, 32][/RDS\|(.*)\|RDS/, 1]
-        offset = prefix.size + 8
+      if marked[0] == '|'.freeze
+        prefix = marked[0, 32][/\|(.*)\|/, 1]
+        offset = prefix.size + 2
 
         m_name, c_name, _ = prefix.split('|'.freeze)
 

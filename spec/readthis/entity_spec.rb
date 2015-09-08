@@ -114,7 +114,7 @@ RSpec.describe Readthis::Entity do
       string = 'the quick brown fox'
       marked = Readthis::Entity.new.compose(string, Marshal, true)
 
-      expect(marked).to include('RDS|Marshal|true|1|RDS')
+      expect(marked).to include('|Marshal|true|1|')
       expect(marked).to include(string)
     end
   end
