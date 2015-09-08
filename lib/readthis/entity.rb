@@ -33,22 +33,22 @@ module Readthis
     end
 
     def compose(value, marshal, compress)
-      prefix = "R|#{marshal.name}|#{compress}|#{MARKER_VERSION}|R"
+      prefix = ''
+      prefix << 'R|'.freeze
+      prefix << marshal.name.ljust(16)
+      prefix << (compress ? '1'.freeze : '0'.freeze)
+      prefix << MARKER_VERSION
+      prefix << '|R'.freeze
 
       value.prepend(prefix)
     end
 
     def decompose(marked)
       if marked && marked[0, 2] == 'R|'.freeze
-        prefix = marked[0, 32].scrub('*'.freeze)[/R\|(.*)\|R/, 1]
-        offset = prefix.size + 4
+        marshal  = Kernel.const_get(marked[2, 16].strip)
+        compress = marked[19] == '1'.freeze
 
-        m_name, c_name, _ = prefix.split('|'.freeze)
-
-        marshal  = Kernel.const_get(m_name)
-        compress = c_name == 'true'.freeze
-
-        [marshal, compress, marked[offset..-1]]
+        [marshal, compress, marked[22..-1]]
       else
         [@options[:marshal], @options[:compress], marked]
       end
