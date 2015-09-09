@@ -35,7 +35,7 @@ module Readthis
     def compose(value, marshal, compress)
       prefix = ''
       prefix << 'R|'.freeze
-      prefix << marshal.name.ljust(16)
+      prefix << marshal.name.ljust(24)
       prefix << (compress ? '1'.freeze : '0'.freeze)
       prefix << MARKER_VERSION
       prefix << '|R'.freeze
@@ -45,10 +45,10 @@ module Readthis
 
     def decompose(marked)
       if marked && marked[0, 2] == 'R|'.freeze
-        marshal  = Kernel.const_get(marked[2, 16].strip)
-        compress = marked[19] == '1'.freeze
+        marshal  = Kernel.const_get(marked[2, 24].strip)
+        compress = marked[27] == '1'.freeze
 
-        [marshal, compress, marked[22..-1]]
+        [marshal, compress, marked[30..-1]]
       else
         [@options[:marshal], @options[:compress], marked]
       end

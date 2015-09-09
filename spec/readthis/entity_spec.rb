@@ -1,4 +1,5 @@
 require 'readthis/entity'
+require 'readthis/passthrough'
 require 'json'
 
 RSpec.describe Readthis::Entity do
@@ -114,7 +115,8 @@ RSpec.describe Readthis::Entity do
       string = 'the quick brown fox'
       marked = Readthis::Entity.new.compose(string, Marshal, true)
 
-      expect(marked).to include('R|Marshal         11|R')
+      expect(marked).to match(/R\|.+\|R/)
+      expect(marked).to include('Marshal')
       expect(marked).to include(string)
     end
   end
@@ -130,6 +132,18 @@ RSpec.describe Readthis::Entity do
       expect(marshal).to eq(JSON)
       expect(compress).to eq(true)
       expect(value).to eq(string)
+    end
+
+    it 'can reconstruct longer qualified module names' do
+      string = 'a' * 30
+      entity = Readthis::Entity.new
+      marked = entity.compose(string, Readthis::Passthrough, false)
+
+      expect(marked).to include('Readthis::Passthrough')
+
+      marshal, _, value = entity.decompose(marked)
+
+      expect(marshal).to eq(Readthis::Passthrough)
     end
 
     it 'returns the original string without a marker' do
