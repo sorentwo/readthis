@@ -1,7 +1,3 @@
-require 'bundler'
-
-Bundler.setup
-
 require 'benchmark/ips'
 require 'readthis'
 require 'json'

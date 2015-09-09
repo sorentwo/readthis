@@ -33,12 +33,9 @@ module Readthis
     end
 
     def compose(value, marshal, compress)
-      prefix = ''
-      prefix << 'R|'.freeze
-      prefix << marshal.name.ljust(24)
-      prefix << (compress ? '1'.freeze : '0'.freeze)
-      prefix << MARKER_VERSION
-      prefix << '|R'.freeze
+      name   = marshal.name.ljust(24)
+      comp   = compress ? '1'.freeze : '0'.freeze
+      prefix = "R|#{name}#{comp}#{MARKER_VERSION}|R"
 
       value.prepend(prefix)
     end
