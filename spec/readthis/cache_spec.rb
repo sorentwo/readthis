@@ -94,7 +94,16 @@ RSpec.describe Readthis::Cache do
       expect(raw_cache.read('compressed')).to eq(value)
     end
 
-    it 'round trips bulk entries when compression is enabled' do
+    it 'roundtrips entries with option overrides' do
+      cache = Readthis::Cache.new(compress: false)
+      value = 'enough text that it should be compressed'
+
+      cache.write('comp-round', value, marshal: JSON, compress: true, threshold: 8)
+
+      expect(cache.read('comp-round')).to eq(value)
+    end
+
+    it 'roundtrips bulk entries when compression is enabled' do
       cache = Readthis::Cache.new(compress: true, compression_threshold: 8)
       value = 'also enough text to compress'
 
