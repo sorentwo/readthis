@@ -1,6 +1,6 @@
 require 'benchmark/ips'
-require 'readthis'
 require 'json'
+require 'readthis'
 
 READTHIS = Readthis::Cache.new(
   expires_in: 120,
