@@ -73,8 +73,8 @@ RSpec.describe Readthis::Entity do
   describe '#load' do
     it 'unmarshals a value' do
       object = { a: 1, b: '2' }
-      dumped = Marshal.dump(object)
       entity = Readthis::Entity.new
+      dumped = entity.dump(object)
 
       expect(entity.load(dumped)).to eq(object)
     end
@@ -115,9 +115,7 @@ RSpec.describe Readthis::Entity do
       string = 'the quick brown fox'
       marked = Readthis::Entity.new.compose(string, Marshal, true)
 
-      expect(marked).to match(/R\|.+\|R/)
-      expect(marked).to include('Marshal')
-      expect(marked).to include(string)
+      expect(marked[0]).not_to eq('t')
     end
   end
 
@@ -139,9 +137,7 @@ RSpec.describe Readthis::Entity do
       entity = Readthis::Entity.new
       marked = entity.compose(string, Readthis::Passthrough, false)
 
-      expect(marked).to include('Readthis::Passthrough')
-
-      marshal, _, value = entity.decompose(marked)
+      marshal, _, _ = entity.decompose(marked)
 
       expect(marshal).to eq(Readthis::Passthrough)
     end
@@ -154,13 +150,6 @@ RSpec.describe Readthis::Entity do
       expect(marshal).to eq(Marshal)
       expect(compress).to eq(false)
       expect(value).to eq(string)
-    end
-
-    it 'returns defaults with a nil string' do
-      entity = Readthis::Entity.new
-      marshal, compress, value = entity.decompose(nil)
-
-      expect(value).to eq(nil)
     end
   end
 end

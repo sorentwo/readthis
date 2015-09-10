@@ -1,14 +1,24 @@
+require 'json'
 require 'zlib'
+require 'readthis/passthrough'
 
 module Readthis
   class Entity
-    MARKER_VERSION = '1'.freeze
-
     DEFAULT_OPTIONS = {
       compress:  false,
       marshal:   Marshal,
       threshold: 8 * 1024
     }.freeze
+
+    SERIALIZER_FLAGS = {
+      Marshal     => 0x1,
+      JSON        => 0x2,
+      Passthrough => 0x3
+    }.freeze
+
+    DESERIALIZER_FLAGS = SERIALIZER_FLAGS.invert.freeze
+    COMPRESSED_FLAG    = 0x8
+    MARSHAL_FLAG       = 0x3
 
     def initialize(options = {})
       @options = DEFAULT_OPTIONS.merge(options)
@@ -28,26 +38,34 @@ module Readthis
       marshal, compress, value = decompose(string)
 
       marshal.load(inflate(value, compress))
-    rescue TypeError
+    rescue TypeError, NoMethodError
       string
     end
 
+    # Composes a single byte comprised of the chosen serializer and compression
+    # options. The byte is formatted as:
+    #
+    # | 0000 | 0 | 000 |
+    #
+    # Where there are four unused bits, 1 compression bit, and 3 bits for the
+    # serializer. This allows up to 8 different serializers for marshaling.
     def compose(value, marshal, compress)
-      name   = marshal.name.ljust(24)
-      comp   = compress ? '1'.freeze : '0'.freeze
-      prefix = "R|#{name}#{comp}#{MARKER_VERSION}|R"
+      flags  = SERIALIZER_FLAGS[marshal]
+      flags |= COMPRESSED_FLAG if compress
 
-      value.prepend(prefix)
+      value.prepend([flags].pack('C'))
     end
 
-    def decompose(marked)
-      if marked && marked[0, 2] == 'R|'.freeze
-        marshal  = Kernel.const_get(marked[2, 24].strip)
-        compress = marked[27] == '1'.freeze
+    def decompose(string)
+      flags = string[0].unpack('C').first
 
-        [marshal, compress, marked[30..-1]]
+      if flags < 16
+        marshal  = DESERIALIZER_FLAGS[flags & MARSHAL_FLAG]
+        compress = (flags & COMPRESSED_FLAG) != 0
+
+        [marshal, compress, string[1..-1]]
       else
-        [@options[:marshal], @options[:compress], marked]
+        [@options[:marshal], @options[:compress], string]
       end
     end
 
