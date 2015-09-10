@@ -2,51 +2,77 @@ require 'zlib'
 
 module Readthis
   class Entity
-    DEFAULT_THRESHOLD = 8 * 1024
-    MAGIC_BYTES = [120, 156].freeze
+    MARKER_VERSION = '1'.freeze
 
-    attr_reader :marshal, :compression, :threshold
+    DEFAULT_OPTIONS = {
+      compress:  false,
+      marshal:   Marshal,
+      threshold: 8 * 1024
+    }.freeze
 
     def initialize(options = {})
-      @marshal     = options.fetch(:marshal, Marshal)
-      @compression = options.fetch(:compress, false)
-      @threshold   = options.fetch(:threshold, DEFAULT_THRESHOLD)
+      @options = DEFAULT_OPTIONS.merge(options)
     end
 
-    def dump(value)
-      if compress?(value)
-        compress(value)
+    def dump(value, options = {})
+      marshal   = with_fallback(options, :marshal)
+      threshold = with_fallback(options, :threshold)
+      compress  = with_fallback(options, :compress)
+
+      dumped = deflate(marshal.dump(value), compress, threshold)
+
+      compose(dumped, marshal, compress)
+    end
+
+    def load(string)
+      marshal, compress, value = decompose(string)
+
+      marshal.load(inflate(value, compress))
+    rescue TypeError
+      string
+    end
+
+    def compose(value, marshal, compress)
+      name   = marshal.name.ljust(24)
+      comp   = compress ? '1'.freeze : '0'.freeze
+      prefix = "R|#{name}#{comp}#{MARKER_VERSION}|R"
+
+      value.prepend(prefix)
+    end
+
+    def decompose(marked)
+      if marked && marked[0, 2] == 'R|'.freeze
+        marshal  = Kernel.const_get(marked[2, 24].strip)
+        compress = marked[27] == '1'.freeze
+
+        [marshal, compress, marked[30..-1]]
       else
-        marshal.dump(value)
+        [@options[:marshal], @options[:compress], marked]
       end
-    end
-
-    def load(value)
-      if compressed?(value)
-        decompress(value)
-      else
-        marshal.load(value)
-      end
-    rescue TypeError, Zlib::Error
-      value
-    end
-
-    def compress(value)
-      Zlib::Deflate.deflate(marshal.dump(value))
-    end
-
-    def decompress(value)
-      marshal.load(Zlib::Inflate.inflate(value))
     end
 
     private
 
-    def compress?(value)
-      compression && value.bytesize >= threshold
+    def deflate(value, compress, threshold)
+      if compress && value.bytesize >= threshold
+        Zlib::Deflate.deflate(value)
+      else
+        value
+      end
     end
 
-    def compressed?(value)
-      compression && value[0, 2].unpack('CC') == MAGIC_BYTES
+    def inflate(value, decompress)
+      if decompress
+        Zlib::Inflate.inflate(value)
+      else
+        value
+      end
+    rescue Zlib::Error
+      value
+    end
+
+    def with_fallback(options, key)
+      options.key?(key) ? options[key] : @options[key]
     end
   end
 end

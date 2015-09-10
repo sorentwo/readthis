@@ -310,7 +310,7 @@ module Readthis
     # @example
     #
     #   cache.clear #=> 'OK'
-    def clear(options = {})
+    def clear(_options = nil)
       invoke(:clear, '*', &:flushdb)
     end
 
@@ -318,11 +318,12 @@ module Readthis
 
     def write_entity(key, value, store, options)
       namespaced = namespaced_key(key, options)
+      dumped = entity.dump(value, options)
 
       if expiration = options[:expires_in]
-        store.setex(namespaced, expiration.to_i, entity.dump(value))
+        store.setex(namespaced, expiration.to_i, dumped)
       else
-        store.set(namespaced, entity.dump(value))
+        store.set(namespaced, dumped)
       end
     end
 
