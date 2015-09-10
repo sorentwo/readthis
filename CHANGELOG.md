@@ -1,3 +1,18 @@
+## Unreleased
+
+- Breaking: However, the change is necessary for the consistency and portability
+  of values going forward. All entities are now written with a set of option
+  flags as the initial byte. This flag is later used to determine whether the
+  entity was compressed and what was used to marshal it. There are a number of
+  advantages to this approach, consistency and reliability being the most
+  important. See [readthis#17][pull-17] for additional background.
+- Added: Per-entity options can be passed through to any cache method that
+  writes a value (`write`, `fetch`, etc). For example, this allows certain
+  entities to be cached as JSON while all other entities are cached using
+  Marshal.
+
+[pull-17]: https://github.com/sorentwo/readthis/pull/17
+
 ## v0.8.1 2015-09-04
 
 - Changed: `Readthis::Cache` now has an accessor for the options that were
@@ -13,9 +28,9 @@
   when it can the value looks to be compressed, falling back to the initial
   value when decompression fails. See [readthis#13][issue-13] for details.
 
-[issue-13]: https://github.com/sorentwo/readthis/pull/13
-[issue-15]: https://github.com/sorentwo/readthis/pull/15
-[issue-16]: https://github.com/sorentwo/readthis/pull/16
+[issue-13]: https://github.com/sorentwo/readthis/issues/13
+[issue-15]: https://github.com/sorentwo/readthis/issues/15
+[issue-16]: https://github.com/sorentwo/readthis/issues/16
 
 ## v0.8.0 2015-08-26
 
