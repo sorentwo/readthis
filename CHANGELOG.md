@@ -10,6 +10,11 @@
   writes a value (`write`, `fetch`, etc). For example, this allows certain
   entities to be cached as JSON while all other entities are cached using
   Marshal.
+- Breaking: A hash containing the cache key is passed as the payload for
+  `ActiveSupport::Notifications` instrumentation, rather than the key directly.
+  This moves the implementation in-line with the tests for the code, and
+  prevents errors from being masked when an error occurs inside an instrumented
+  block. [readthis#20][pull-20]. Discovered by @banister and fixed by @workmad3.
 
 [pull-17]: https://github.com/sorentwo/readthis/pull/17
 
