@@ -171,7 +171,7 @@ module Readthis
     #   cache.increment('counter', 2) # => 3
     #
     def increment(key, amount = 1, options = {})
-      invoke(:incremenet, key) do |store|
+      invoke(:increment, key) do |store|
         alter(key, amount, options)
       end
     end
