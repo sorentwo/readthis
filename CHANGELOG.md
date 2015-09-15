@@ -17,6 +17,7 @@
   block. [readthis#20][pull-20]. Discovered by @banister and fixed by @workmad3.
 
 [pull-17]: https://github.com/sorentwo/readthis/pull/17
+[pull-20]: https://github.com/sorentwo/readthis/pull/20
 
 ## v0.8.1 2015-09-04
 
