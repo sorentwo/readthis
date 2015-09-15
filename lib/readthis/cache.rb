@@ -340,7 +340,7 @@ module Readthis
       name    = "cache_#{operation}.active_support"
       payload = { key: key }
 
-      self.class.notifications.instrument(name, key) { yield(payload) }
+      self.class.notifications.instrument(name, payload) { yield(payload) }
     end
 
     def invoke(operation, key, &block)
