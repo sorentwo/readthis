@@ -1,4 +1,4 @@
-require 'readthis/cache'
+require 'readthis'
 
 RSpec.describe Readthis::Cache do
   let(:cache) { Readthis::Cache.new }
@@ -79,6 +79,30 @@ RSpec.describe Readthis::Cache do
   describe '#read' do
     it 'gracefully handles nil options' do
       expect { cache.read('whatever', nil) }.not_to raise_error
+    end
+  end
+
+  describe 'serializers' do
+    after do
+      Readthis.serializers.reset!
+    end
+
+    it 'uses globally configured serializers' do
+      custom = Class.new do
+        def self.dump(_)
+          'dumped'
+        end
+
+        def self.load(_)
+          'dumped'
+        end
+      end
+
+      Readthis.serializers << custom
+
+      cache.write('customized', 'overwrite me', marshal: custom)
+
+      expect(cache.read('customized')).to include('dumped')
     end
   end
 

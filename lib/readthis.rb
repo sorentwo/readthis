@@ -1,6 +1,6 @@
 require 'readthis/cache'
-require 'readthis/version'
 require 'readthis/serializers'
+require 'readthis/version'
 
 module Readthis
   extend self
