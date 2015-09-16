@@ -102,11 +102,11 @@ Readthis uses Ruby's `Marshal` module for dumping and loading all values by
 default. This isn't always the fastest option, and depending on your use case it
 may be desirable to use a faster but less flexible marshaller.
 
-Use Oj for JSON marshalling, extremely fast, but supports limited types:
+By default Readthis knows about 3 different serializers for marshalling:
 
-```ruby
-Readthis::Cache.new(marshal: Oj)
-```
+* Marshal
+* JSON
+* Passthrough
 
 If all cached data can safely be represented as a string then use the
 pass-through marshaller:
@@ -114,6 +114,24 @@ pass-through marshaller:
 ```ruby
 Readthis::Cache.new(marshal: Readthis::Passthrough)
 ```
+
+You can introduce up to four additional marshals by configuring `serializers` on
+the Readthis module. For example, if you wanted to use Oj for JSON marshalling,
+it is extremely fast, but supports limited types:
+
+```ruby
+Readthis.serializers << Oj
+
+# Freeze the serializers to ensure they aren't changed at runtime.
+Readthis.serializers.freeze!
+
+Readthis::Cache.new(marshal: Oj)
+```
+
+Be aware that the order in which you add serializers matters. Serializers are
+sticky and a flag is stored with each cached value. If you subsequently go to
+deserialize values and haven't configured the same serializers in the same order
+your application will raise errors.
 
 ## Differences From ActiveSupport::Cache
 
