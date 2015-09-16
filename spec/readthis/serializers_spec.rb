@@ -12,9 +12,6 @@ RSpec.describe Readthis::Serializers do
 
       expect(serializers.marshals).to include(CustomSerializer)
       expect(serializers.flags).to eq((1..4).to_a)
-      expect(serializers.serializers).to include(
-        CustomSerializer => 4
-      )
     end
 
     it 'increments flags' do
@@ -34,21 +31,19 @@ RSpec.describe Readthis::Serializers do
     end
   end
 
-  describe '#[]' do
+  describe '#assoc' do
     it 'looks up serializers by module' do
       serializers = Readthis::Serializers.new
 
-      expect(serializers[Marshal]).to eq(0x1)
+      expect(serializers.assoc(Marshal)).to eq(0x1)
     end
   end
 
-  describe '#inverted' do
+  describe '#rassoc' do
     it 'inverts the current set of serializers' do
       serializers = Readthis::Serializers.new
 
-      expect(serializers.inverted).to include(
-        1 => Marshal
-      )
+      expect(serializers.rassoc(1)).to eq(Marshal)
     end
   end
 

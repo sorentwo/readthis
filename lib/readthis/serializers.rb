@@ -13,14 +13,10 @@ module Readthis
 
     SERIALIZER_LIMIT = 7
 
-    attr_reader :serializers
+    attr_reader :serializers, :inverted
 
     def initialize
       reset!
-    end
-
-    def inverted
-      serializers.invert
     end
 
     def <<(serializer)
@@ -31,11 +27,16 @@ module Readthis
         raise SerializersLimitError
       else
         @serializers[serializer] = flags.max.succ
+        @inverted = @serializers.invert
       end
     end
 
-    def [](marshal)
+    def assoc(marshal)
       serializers[marshal]
+    end
+
+    def rassoc(flag)
+      inverted[flag]
     end
 
     def freeze!
@@ -44,6 +45,7 @@ module Readthis
 
     def reset!
       @serializers = BASE_SERIALIZERS.dup
+      @inverted = @serializers.invert
     end
 
     def marshals
