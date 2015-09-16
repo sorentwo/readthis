@@ -10,7 +10,7 @@ RSpec.describe Readthis::Serializers do
 
       serializers << CustomSerializer
 
-      expect(serializers.modules).to include(CustomSerializer)
+      expect(serializers.marshals).to include(CustomSerializer)
       expect(serializers.flags).to eq((1..4).to_a)
       expect(serializers.serializers).to include(
         CustomSerializer => 4
@@ -34,6 +34,14 @@ RSpec.describe Readthis::Serializers do
     end
   end
 
+  describe '#[]' do
+    it 'looks up serializers by module' do
+      serializers = Readthis::Serializers.new
+
+      expect(serializers[Marshal]).to eq(0x1)
+    end
+  end
+
   describe '#inverted' do
     it 'inverts the current set of serializers' do
       serializers = Readthis::Serializers.new
@@ -44,7 +52,7 @@ RSpec.describe Readthis::Serializers do
     end
   end
 
-  describe '#freeze' do
+  describe '#freeze!' do
     it 'does now allow appending after freeze' do
       serializers = Readthis::Serializers.new
 
@@ -53,6 +61,17 @@ RSpec.describe Readthis::Serializers do
       expect {
         serializers << CustomSerializer
       }.to raise_error(Readthis::SerializersFrozenError)
+    end
+  end
+
+  describe '#reset!' do
+    it 'reverts back to the original set of serializers' do
+      serializers = Readthis::Serializers.new
+
+      serializers << Class.new
+      serializers.reset!
+
+      expect(serializers.marshals.length).to eq(3)
     end
   end
 end

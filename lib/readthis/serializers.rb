@@ -16,7 +16,7 @@ module Readthis
     attr_reader :serializers
 
     def initialize
-      @serializers = BASE_SERIALIZERS.dup
+      reset!
     end
 
     def inverted
@@ -34,11 +34,19 @@ module Readthis
       end
     end
 
+    def [](marshal)
+      serializers[marshal]
+    end
+
     def freeze!
       serializers.freeze
     end
 
-    def modules
+    def reset!
+      @serializers = BASE_SERIALIZERS.dup
+    end
+
+    def marshals
       serializers.keys
     end
 
