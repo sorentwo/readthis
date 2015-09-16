@@ -1,6 +1,4 @@
-require 'json'
 require 'zlib'
-require 'readthis/passthrough'
 
 module Readthis
   class Entity
@@ -10,15 +8,8 @@ module Readthis
       threshold: 8 * 1024
     }.freeze
 
-    SERIALIZER_FLAGS = {
-      Marshal     => 0x1,
-      JSON        => 0x2,
-      Passthrough => 0x3
-    }.freeze
-
-    DESERIALIZER_FLAGS = SERIALIZER_FLAGS.invert.freeze
-    COMPRESSED_FLAG    = 0x8
-    MARSHAL_FLAG       = 0x3
+    COMPRESSED_FLAG = 0x8
+    MARSHAL_FLAG    = 0x3
 
     # Creates a Readthis::Entity with default options. Each option can be
     # overridden later when entities are being dumped.
@@ -98,7 +89,7 @@ module Readthis
     #   entity.compose(string, JSON, true)     => 0x10 + string
     #
     def compose(value, marshal, compress)
-      flags  = SERIALIZER_FLAGS[marshal]
+      flags  = serializers.assoc(marshal)
       flags |= COMPRESSED_FLAG if compress
 
       value.prepend([flags].pack('C'))
@@ -114,7 +105,7 @@ module Readthis
       flags = string[0].unpack('C').first
 
       if flags < 16
-        marshal  = DESERIALIZER_FLAGS[flags & MARSHAL_FLAG]
+        marshal  = serializers.rassoc(flags & MARSHAL_FLAG)
         compress = (flags & COMPRESSED_FLAG) != 0
 
         [marshal, compress, string[1..-1]]
@@ -141,6 +132,10 @@ module Readthis
       end
     rescue Zlib::Error
       value
+    end
+
+    def serializers
+      Readthis.serializers
     end
 
     def with_fallback(options, key)
