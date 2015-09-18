@@ -1,3 +1,3 @@
 module Readthis
-  VERSION = '0.8.1'
+  VERSION = '1.0.0-beta'
 end

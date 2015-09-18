@@ -1,16 +1,16 @@
-## Unreleased
+## v1.0.0-beta
 
-- Breaking: However, the change is necessary for the consistency and portability
-  of values going forward. All entities are now written with a set of option
-  flags as the initial byte. This flag is later used to determine whether the
-  entity was compressed and what was used to marshal it. There are a number of
+- Breaking: This change is necessary for the consistency and portability of
+  values going forward. All entities are now written with a set of option flags
+  as the initial byte. This flag is later used to determine whether the entity
+  was compressed and what was used to marshal it. There are a number of
   advantages to this approach, consistency and reliability being the most
   important. See [readthis#17][pull-17] for additional background.
 - Added: Per-entity options can be passed through to any cache method that
   writes a value (`write`, `fetch`, etc). For example, this allows certain
   entities to be cached as JSON while all other entities are cached using
-  Marshal.
-- Breaking: A hash containing the cache key is passed as the payload for
+  Marshal. Thanks to @fabn.
+- Fixed: A hash containing the cache key is passed as the payload for
   `ActiveSupport::Notifications` instrumentation, rather than the key directly.
   This moves the implementation in-line with the tests for the code, and
   prevents errors from being masked when an error occurs inside an instrumented
