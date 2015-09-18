@@ -1,3 +1,4 @@
+require 'json'
 require 'readthis/passthrough'
 
 module Readthis

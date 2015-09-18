@@ -6,7 +6,7 @@ require 'fileutils'
 require 'stackprof'
 require 'readthis'
 
-readthis = Readthis::Cache.new('redis://localhost:6379/11')
+readthis = Readthis::Cache.new
 
 FileUtils.mkdir_p('tmp')
 readthis.clear
