@@ -9,11 +9,10 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Parker Selbert']
   spec.email         = ['parker@sorentwo.com']
   spec.summary       = 'Pooled active support compliant caching with redis'
-  spec.description   = 'Pooled active support compliant caching with redis'
   spec.homepage      = 'https://github.com/sorentwo/readthis'
   spec.license       = 'MIT'
 
-  spec.files         = `git ls-files -z`.split("\x0")
+  spec.files         = `git ls-files lib spec README.md`.split($/)
   spec.test_files    = spec.files.grep(%r{^(spec)/})
   spec.require_paths = ['lib']
 
