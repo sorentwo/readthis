@@ -171,7 +171,7 @@ module Readthis
     #   cache.increment('counter', 2) # => 3
     #
     def increment(key, amount = 1, options = {})
-      invoke(:increment, key) do |store|
+      invoke(:increment, key) do |_store|
         alter(key, amount, options)
       end
     end
@@ -192,7 +192,7 @@ module Readthis
     #   cache.decrement('counter', 2) # => 17
     #
     def decrement(key, amount = 1, options = {})
-      invoke(:decrement, key) do |store|
+      invoke(:decrement, key) do |_store|
         alter(key, amount * -1, options)
       end
     end
@@ -271,13 +271,13 @@ module Readthis
       extracted = extract_options!(keys)
       missing   = {}
 
-      invoke(:fetch_multi, keys) do |store|
+      invoke(:fetch_multi, keys) do |_store|
         results.each do |key, value|
-          if value.nil?
-            value = yield(key)
-            missing[key] = value
-            results[key] = value
-          end
+          next unless value.nil?
+
+          value = yield(key)
+          missing[key] = value
+          results[key] = value
         end
       end
 
@@ -354,8 +354,8 @@ module Readthis
     end
 
     def merged_options(options)
-      options = options || {}
-      options[:namespace]  ||= namespace
+      options ||= {}
+      options[:namespace] ||= namespace
       options[:expires_in] ||= expires_in
       options
     end

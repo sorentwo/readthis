@@ -19,7 +19,7 @@ RSpec.describe Readthis::Expanders do
     it 'expands an array of objects' do
       object = double(cache_key: 'gamma')
 
-      expect(expand(['alpha', 'beta'])).to eq('alpha/beta')
+      expect(expand(%w[alpha beta])).to eq('alpha/beta')
       expect(expand([object, object])).to eq('gamma/gamma')
     end
 

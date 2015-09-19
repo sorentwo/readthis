@@ -136,7 +136,7 @@ RSpec.describe Readthis::Entity do
       entity = Readthis::Entity.new
       marked = entity.compose(string, Readthis::Passthrough, false)
 
-      marshal, _, _ = entity.decompose(marked)
+      marshal, _compress, _value = entity.decompose(marked)
 
       expect(marshal).to eq(Readthis::Passthrough)
     end

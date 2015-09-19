@@ -25,9 +25,9 @@ RSpec.describe Readthis::Serializers do
     it 'prevents more than seven serializers' do
       serializers = Readthis::Serializers.new
 
-      expect {
+      expect do
         10.times { serializers << Class.new }
-      }.to raise_error(Readthis::SerializersLimitError)
+      end.to raise_error(Readthis::SerializersLimitError)
     end
   end
 
@@ -53,9 +53,9 @@ RSpec.describe Readthis::Serializers do
 
       serializers.freeze!
 
-      expect {
+      expect do
         serializers << CustomSerializer
-      }.to raise_error(Readthis::SerializersFrozenError)
+      end.to raise_error(Readthis::SerializersFrozenError)
     end
   end
 

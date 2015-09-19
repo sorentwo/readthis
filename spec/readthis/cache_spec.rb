@@ -179,7 +179,7 @@ RSpec.describe Readthis::Cache do
       expect(cache.read_multi('a', 'b', 'c')).to eq(
         'a' => 1,
         'b' => 2,
-        'c' => '3',
+        'c' => '3'
       )
     end
 
@@ -189,7 +189,7 @@ RSpec.describe Readthis::Cache do
 
       expect(cache.read_multi('d', 'e', namespace: 'cache')).to eq(
         'd' => 1,
-        'e' => 2,
+        'e' => 2
       )
     end
 
@@ -208,7 +208,11 @@ RSpec.describe Readthis::Cache do
     end
 
     it 'respects passed options' do
-      cache.write_multi({ 'a' => 1, 'b' => 2 }, namespace: 'multi', expires_in: 1)
+      cache.write_multi(
+        { 'a' => 1, 'b' => 2 },
+        namespace: 'multi',
+        expires_in: 1
+      )
 
       expect(cache.read('a')).to be_nil
       expect(cache.read('a', namespace: 'multi')).to eq(1)
@@ -227,7 +231,7 @@ RSpec.describe Readthis::Cache do
       expect(results).to eq(
         'a' => 1,
         'b' => 'bb',
-        'c' => 3,
+        'c' => 3
       )
 
       expect(cache.read('b')).to eq('bb')

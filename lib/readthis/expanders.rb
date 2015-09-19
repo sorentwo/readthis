@@ -7,7 +7,7 @@ module Readthis
       when key.is_a?(Array)
         key.flat_map { |elem| expand_key(elem) }.join('/')
       when key.is_a?(Hash)
-        key.sort_by { |key, _| key.to_s }.map { |key, val| "#{key}=#{val}" }.join('/')
+        key.sort_by { |hkey, _| hkey.to_s }.map { |hkey, val| "#{hkey}=#{val}" }.join('/')
       when key.respond_to?(:to_param)
         key.to_param
       else
