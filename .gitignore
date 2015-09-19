@@ -13,3 +13,4 @@
 *.a
 mkmf.log
 TODO
+bin/*
