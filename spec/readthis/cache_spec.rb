@@ -8,18 +8,6 @@ RSpec.describe Readthis::Cache do
   end
 
   describe '#initialize' do
-    it 'accepts and persists a namespace' do
-      cache = Readthis::Cache.new(namespace: 'kash')
-
-      expect(cache.namespace).to eq('kash')
-    end
-
-    it 'accepts and persists an expiration' do
-      cache = Readthis::Cache.new(expires_in: 10)
-
-      expect(cache.expires_in).to eq(10)
-    end
-
     it 'makes options available' do
       cache = Readthis::Cache.new(namespace: 'cache', expires_in: 1)
 

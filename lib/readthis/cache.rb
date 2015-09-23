@@ -7,7 +7,7 @@ require 'connection_pool'
 
 module Readthis
   class Cache
-    attr_reader :entity, :expires_in, :namespace, :options, :pool
+    attr_reader :entity, :options, :pool
 
     # Provide a class level lookup of the proper notifications module.
     # Instrumention is expected to occur within applications that have
@@ -39,9 +39,7 @@ module Readthis
     #   Readthis::Cache.new(compress: true, compression_threshold: 2048)
     #
     def initialize(options = {})
-      @options    = options
-      @expires_in = options.fetch(:expires_in, nil)
-      @namespace  = options.fetch(:namespace, nil)
+      @options = options
 
       @entity = Readthis::Entity.new(
         marshal:   options.fetch(:marshal, Marshal),
@@ -354,10 +352,7 @@ module Readthis
     end
 
     def merged_options(options)
-      options ||= {}
-      options[:namespace] ||= namespace
-      options[:expires_in] ||= expires_in
-      options
+      (options || {}).merge!(@options)
     end
 
     def pool_options(options)
