@@ -10,8 +10,8 @@ RSpec.describe Readthis::Serializers do
 
       serializers << CustomSerializer
 
-      expect(serializers.serializers.keys).to include(CustomSerializer)
-      expect(serializers.serializers.values).to eq([1, 2, 3, 4])
+      expect(serializers.marshals).to include(CustomSerializer)
+      expect(serializers.flags).to eq([1, 2, 3, 4])
     end
 
     it 'increments flags' do
@@ -19,7 +19,7 @@ RSpec.describe Readthis::Serializers do
       serializers << CustomSerializer
       serializers << AnotherSerializer
 
-      expect(serializers.serializers.values).to eq((1..5).to_a)
+      expect(serializers.flags).to eq((1..5).to_a)
     end
 
     it 'prevents more than seven serializers' do
@@ -52,14 +52,6 @@ RSpec.describe Readthis::Serializers do
       serializers = Readthis::Serializers.new
 
       expect(serializers.rassoc(1)).to eq(Marshal)
-    end
-
-    it 'raises a helpful error when the flag is unknown' do
-      serializers = Readthis::Serializers.new
-
-      expect do
-        serializers.rassoc(5)
-      end.to raise_error(Readthis::UnknownSerializerError)
     end
   end
 

@@ -68,6 +68,8 @@ module Readthis
     #
     # @param [Object] Look up a flag by object
     # @return [Number] Corresponding flag for the serializer object
+    # @raise [UnknownSerializerError] Indicates that a serializer was
+    #   specified, but hasn't been configured for usage.
     #
     # @example
     #
@@ -88,18 +90,20 @@ module Readthis
     # @param [Number] Flag to look up the serializer object by
     # @return [Module] The serializer object
     #
+    # @example
+    #
+    #   serializers.rassoc(1) #=> Marshal
+    #
     def rassoc(flag)
-      serializer = inverted[flag]
-
-      unless serializer
-        fail UnknownSerializerError, "'#{flag}' doesn't match any serializers"
-      end
-
-      serializer
+      inverted[flag]
     end
 
-    private
+    # @private
+    def marshals
+      serializers.keys
+    end
 
+    # @private
     def flags
       serializers.values
     end
