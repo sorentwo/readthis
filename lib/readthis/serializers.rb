@@ -64,14 +64,14 @@ module Readthis
       @inverted = @serializers.invert
     end
 
-    # Find a flag by the marshal object.
+    # Find a flag for a serializer object.
     #
     # @param [Object] Look up a flag by object
-    # @return [Number] Corresponding flag for the marshal object
+    # @return [Number] Corresponding flag for the serializer object
     #
     # @example
     #
-    #   serializers.assoc(Marshal) #=> 1
+    #   serializers.assoc(JSON) #=> 1
     #
     def assoc(serializer)
       flag = serializers[serializer]
@@ -83,10 +83,10 @@ module Readthis
       flag
     end
 
-    # Find a marshal object by flag value.
+    # Find a serializer object by flag value.
     #
-    # @param [Number] Flag to look up the marshal object by
-    # @return [Module] The marshal object
+    # @param [Number] Flag to look up the serializer object by
+    # @return [Module] The serializer object
     #
     def rassoc(flag)
       serializer = inverted[flag]
@@ -98,14 +98,8 @@ module Readthis
       serializer
     end
 
-    # The current list of marshal objects.
-    #
-    def marshals
-      serializers.keys
-    end
+    private
 
-    # The current list of flags.
-    #
     def flags
       serializers.values
     end

@@ -96,28 +96,28 @@ config.cache_store = :readthis_store, {
 }
 ```
 
-### Marshalling
+### Serializing
 
-Readthis uses Ruby's `Marshal` module for dumping and loading all values by
-default. This isn't always the fastest option, and depending on your use case it
-may be desirable to use a faster but less flexible marshaller.
+Readthis uses Ruby's `Marshal` module for serializing all values by default.
+This isn't always the fastest option, and depending on your use case it may be
+desirable to use a faster but less flexible serializer.
 
-By default Readthis knows about 3 different serializers for marshalling:
+By default Readthis knows about 3 different serializers:
 
 * Marshal
 * JSON
 * Passthrough
 
 If all cached data can safely be represented as a string then use the
-pass-through marshaller:
+pass-through serializer:
 
 ```ruby
 Readthis::Cache.new(marshal: Readthis::Passthrough)
 ```
 
-You can introduce up to four additional marshals by configuring `serializers` on
-the Readthis module. For example, if you wanted to use Oj for JSON marshalling,
-it is extremely fast, but supports limited types:
+You can introduce up to four additional serializers by configuring `serializers`
+on the Readthis module. For example, if you wanted to use the extremely fast Oj
+library for JSON serialization:
 
 ```ruby
 Readthis.serializers << Oj
