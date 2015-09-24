@@ -2,8 +2,9 @@ require 'json'
 require 'readthis/passthrough'
 
 module Readthis
-  SerializersFrozenError = Class.new(Exception)
-  SerializersLimitError  = Class.new(Exception)
+  SerializersFrozenError = Class.new(StandardError)
+  SerializersLimitError  = Class.new(StandardError)
+  UnknownSerializerError = Class.new(StandardError)
 
   class Serializers
     BASE_SERIALIZERS = {
@@ -38,9 +39,9 @@ module Readthis
     def <<(serializer)
       case
       when serializers.frozen?
-        raise SerializersFrozenError
+        fail SerializersFrozenError
       when serializers.length > SERIALIZER_LIMIT
-        raise SerializersLimitError
+        fail SerializersLimitError
       else
         @serializers[serializer] = flags.max.succ
         @inverted = @serializers.invert
@@ -72,8 +73,14 @@ module Readthis
     #
     #   serializers.assoc(Marshal) #=> 1
     #
-    def assoc(marshal)
-      serializers[marshal]
+    def assoc(serializer)
+      flag = serializers[serializer]
+
+      unless flag
+        fail UnknownSerializerError, "'#{serializer}' hasn't been configured"
+      end
+
+      flag
     end
 
     # Find a marshal object by flag value.
@@ -82,7 +89,13 @@ module Readthis
     # @return [Module] The marshal object
     #
     def rassoc(flag)
-      inverted[flag]
+      serializer = inverted[flag]
+
+      unless serializer
+        fail UnknownSerializerError, "'#{flag}' doesn't match any serializers"
+      end
+
+      serializer
     end
 
     # The current list of marshal objects.

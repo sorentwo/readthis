@@ -37,6 +37,14 @@ RSpec.describe Readthis::Serializers do
 
       expect(serializers.assoc(Marshal)).to eq(0x1)
     end
+
+    it 'raises a helpful error when the serializer is unknown' do
+      serializers = Readthis::Serializers.new
+
+      expect do
+        serializers.assoc(CustomSerializer)
+      end.to raise_error(Readthis::UnknownSerializerError)
+    end
   end
 
   describe '#rassoc' do
@@ -44,6 +52,14 @@ RSpec.describe Readthis::Serializers do
       serializers = Readthis::Serializers.new
 
       expect(serializers.rassoc(1)).to eq(Marshal)
+    end
+
+    it 'raises a helpful error when the flag is unknown' do
+      serializers = Readthis::Serializers.new
+
+      expect do
+        serializers.rassoc(5)
+      end.to raise_error(Readthis::UnknownSerializerError)
     end
   end
 
