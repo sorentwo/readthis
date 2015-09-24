@@ -1,3 +1,15 @@
+## Unreleased
+
+- Changed: There are no longer direct accessors for `namespace` and
+  `expires_in`. Instead, the exposed `options` hash is used as the fallback for
+  all operations. For `ActiveSupport` compliance options must be exposed, so this
+  prevents configuration drift after initialization. [readthis#21][issue-21]
+- Added: More helpful errors are raised when attempting to use a serializer that
+  hasn't been configured. [readthis#22][issue-22].
+
+[issue-21]: https://github.com/sorentwo/readthis/issues/21
+[issue-22]: https://github.com/sorentwo/readthis/issues/22
+
 ## v1.0.0-beta
 
 - Breaking: This change is necessary for the consistency and portability of
