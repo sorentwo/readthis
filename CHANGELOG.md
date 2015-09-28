@@ -1,5 +1,7 @@
-## Unreleased
+## v1.0.0-rc.1
 
+- Fixed: Custom serializers would be encoded correcty, but would be ignored when
+  the value was read back out, leaving the encoding flags prefixed to the value.
 - Changed: There are no longer direct accessors for `namespace` and
   `expires_in`. Instead, the exposed `options` hash is used as the fallback for
   all operations. For `ActiveSupport` compliance options must be exposed, so this
