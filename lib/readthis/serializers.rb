@@ -95,7 +95,7 @@ module Readthis
     #   serializers.rassoc(1) #=> Marshal
     #
     def rassoc(flag)
-      inverted[flag]
+      inverted[flag & inverted.length]
     end
 
     # @private

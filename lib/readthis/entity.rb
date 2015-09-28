@@ -9,7 +9,6 @@ module Readthis
     }.freeze
 
     COMPRESSED_FLAG = 0x8
-    MARSHAL_FLAG    = 0x3
 
     # Creates a Readthis::Entity with default options. Each option can be
     # overridden later when entities are being dumped.
@@ -105,7 +104,7 @@ module Readthis
       flags = string[0].unpack('C').first
 
       if flags < 16
-        marshal  = serializers.rassoc(flags & MARSHAL_FLAG)
+        marshal  = serializers.rassoc(flags)
         compress = (flags & COMPRESSED_FLAG) != 0
 
         [marshal, compress, string[1..-1]]

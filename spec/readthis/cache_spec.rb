@@ -77,20 +77,20 @@ RSpec.describe Readthis::Cache do
 
     it 'uses globally configured serializers' do
       custom = Class.new do
-        def self.dump(_)
-          'dumped'
+        def self.dump(value)
+          value
         end
 
-        def self.load(_)
-          'dumped'
+        def self.load(value)
+          value
         end
       end
 
       Readthis.serializers << custom
 
-      cache.write('customized', 'overwrite me', marshal: custom)
+      cache.write('customized', 'some value', marshal: custom)
 
-      expect(cache.read('customized')).to include('dumped')
+      expect(cache.read('customized')).to eq('some value')
     end
   end
 

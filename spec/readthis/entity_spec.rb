@@ -131,16 +131,6 @@ RSpec.describe Readthis::Entity do
       expect(value).to eq(string)
     end
 
-    it 'can reconstruct longer qualified module names' do
-      string = 'a' * 30
-      entity = Readthis::Entity.new
-      marked = entity.compose(string, Readthis::Passthrough, false)
-
-      marshal, _compress, _value = entity.decompose(marked)
-
-      expect(marshal).to eq(Readthis::Passthrough)
-    end
-
     it 'returns the original string without a marker' do
       string = 'the quick brown fox'
       entity = Readthis::Entity.new

@@ -53,6 +53,13 @@ RSpec.describe Readthis::Serializers do
 
       expect(serializers.rassoc(1)).to eq(Marshal)
     end
+
+    it 'returns custom serializers' do
+      serializers = Readthis::Serializers.new
+      serializers << CustomSerializer
+
+      expect(serializers.rassoc(4)).to eq(CustomSerializer)
+    end
   end
 
   describe '#freeze!' do
