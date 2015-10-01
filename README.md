@@ -41,6 +41,11 @@ config.cache_store = :readthis_store, {
 }
 ```
 
+Also you can specify `host`, `port` and `db` options in redis section.
+For more details about connection options see in [redis gem documentation][redis-gem]
+[redis-gem]: https://github.com/redis/redis-rb#getting-started
+
+
 Otherwise you can use it anywhere, without any reliance on `ActiveSupport`:
 
 ```ruby
