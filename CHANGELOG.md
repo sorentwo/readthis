@@ -1,4 +1,9 @@
-## v1.0.0-rc.1
+## v1.0.0 2015-10-05
+
+- Changed: Remove internal `Notifications` module as part of instrumentation
+  cleanup.
+
+## v1.0.0-rc.1 2015-09-27
 
 - Fixed: Custom serializers would be encoded correcty, but would be ignored when
   the value was read back out, leaving the encoding flags prefixed to the value.
@@ -12,7 +17,7 @@
 [issue-21]: https://github.com/sorentwo/readthis/issues/21
 [issue-22]: https://github.com/sorentwo/readthis/issues/22
 
-## v1.0.0-beta
+## v1.0.0-beta 2015-09-18
 
 - Breaking: This change is necessary for the consistency and portability of
   values going forward. All entities are now written with a set of option flags
