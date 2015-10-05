@@ -16,8 +16,6 @@ module Readthis
     def self.notifications
       if defined?(ActiveSupport::Notifications)
         ActiveSupport::Notifications
-      else
-        Readthis::Notifications
       end
     end
 
@@ -334,11 +332,15 @@ module Readthis
       delta
     end
 
-    def instrument(operation, key)
-      name    = "cache_#{operation}.active_support"
-      payload = { key: key }
+    def instrument(name, key)
+      if self.class.notifications
+        name    = "cache_#{name}.active_support"
+        payload = { key: key, name: name }
 
-      self.class.notifications.instrument(name, payload) { yield(payload) }
+        self.class.notifications.instrument(name, payload) { yield(payload) }
+      else
+        yield
+      end
     end
 
     def invoke(operation, key, &block)
