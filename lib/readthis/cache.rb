@@ -1,22 +1,19 @@
 require 'readthis/entity'
 require 'readthis/expanders'
-require 'readthis/notifications'
 require 'readthis/passthrough'
 require 'redis'
 require 'connection_pool'
 
 module Readthis
   class Cache
-    attr_reader :entity, :options, :pool
+    attr_reader :entity, :notifications, :options, :pool
 
     # Provide a class level lookup of the proper notifications module.
     # Instrumention is expected to occur within applications that have
     # ActiveSupport::Notifications available, but needs to work even when it
     # isn't.
     def self.notifications
-      if defined?(ActiveSupport::Notifications)
-        ActiveSupport::Notifications
-      end
+      ActiveSupport::Notifications if defined?(ActiveSupport::Notifications)
     end
 
     # Creates a new Readthis::Cache object with the given options.

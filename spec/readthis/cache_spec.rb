@@ -291,4 +291,27 @@ RSpec.describe Readthis::Cache do
       expect(cache.decrement('unknown')).to eq(-1)
     end
   end
+
+  describe 'instrumentation' do
+    it 'instruments cache invokations' do
+      require 'active_support/notifications'
+
+      notes  = ActiveSupport::Notifications
+      cache  = Readthis::Cache.new
+      events = []
+
+      notes.subscribe(/cache_*/) do |*args|
+        events << ActiveSupport::Notifications::Event.new(*args)
+      end
+
+      cache.write('a', 'a')
+      cache.read('a')
+
+      expect(events.length).to eq(2)
+      expect(events.map(&:name)).to eq(%w[
+        cache_write.active_support
+        cache_read.active_support
+      ])
+    end
+  end
 end
