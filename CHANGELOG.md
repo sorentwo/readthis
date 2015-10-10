@@ -1,3 +1,7 @@
+## Unreleased
+
+- Changed: All errors now extend from a base `ReadthisError`.
+
 ## v1.0.0 2015-10-05
 
 - Changed: Remove internal `Notifications` module as part of instrumentation
