@@ -1,4 +1,5 @@
 require 'readthis/cache'
+require 'readthis/errors'
 require 'readthis/serializers'
 require 'readthis/version'
 

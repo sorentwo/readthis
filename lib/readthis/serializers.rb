@@ -1,11 +1,8 @@
 require 'json'
+require 'readthis/errors'
 require 'readthis/passthrough'
 
 module Readthis
-  SerializersFrozenError = Class.new(StandardError)
-  SerializersLimitError  = Class.new(StandardError)
-  UnknownSerializerError = Class.new(StandardError)
-
   class Serializers
     BASE_SERIALIZERS = {
       Marshal     => 0x1,
