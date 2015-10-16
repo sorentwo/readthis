@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Fixed: Handle the case when `nil` is explicitly passed as options to `fetch`.
 - Changed: All errors now extend from a base `ReadthisError`.
 
 ## v1.0.0 2015-10-05
