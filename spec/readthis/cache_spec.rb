@@ -156,6 +156,11 @@ RSpec.describe Readthis::Cache do
 
       expect(cache.read('short-key')).to eq('other stuff')
     end
+
+    it 'gets an existing value when `options` are passed as nil' do
+      cache.write('great-key', 'great')
+      expect(cache.fetch('great-key', nil)).to eq('great')
+    end
   end
 
   describe '#read_multi' do

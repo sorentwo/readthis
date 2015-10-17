@@ -138,6 +138,7 @@ module Readthis
     #   cache.fetch('today', force: true) # => nil
     #
     def fetch(key, options = {})
+      options ||= {}
       value = read(key, options) unless options[:force]
 
       if value.nil? && block_given?
