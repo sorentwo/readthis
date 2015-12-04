@@ -1,7 +1,11 @@
 ## Unreleased
 
+- Fixed: Stop overwriting specific options with the default options. [issue-28].
+  Discovered and fixed by @tobinibot.
 - Fixed: Handle the case when `nil` is explicitly passed as options to `fetch`.
 - Changed: All errors now extend from a base `ReadthisError`.
+
+[issue-28]: https://github.com/sorentwo/readthis/issues/28
 
 ## v1.0.0 2015-10-05
 
