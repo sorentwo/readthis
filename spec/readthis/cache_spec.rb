@@ -13,6 +13,18 @@ RSpec.describe Readthis::Cache do
 
       expect(cache.options).to eq(namespace: 'cache', expires_in: 1)
     end
+    
+    it 'handles objects as expires_in values' do
+      class FakeDuration
+        def to_i
+          120
+        end
+      end
+      
+      cache = Readthis::Cache.new(namespace: 'cache', expires_in: FakeDuration.new)
+
+      expect(cache.options).to eq(namespace: 'cache', expires_in: 120)
+    end
   end
 
   describe '#pool' do
@@ -50,6 +62,22 @@ RSpec.describe Readthis::Cache do
     it 'uses a custom expiration' do
       cache.write('some-key', 'some-value', expires_in: 1)
 
+      expect(cache.read('some-key')).not_to be_nil
+      sleep 1.01
+      expect(cache.read('some-key')).to be_nil
+    end
+
+    it 'uses an object for custom expiration' do
+      class FakeDuration
+        def to_i
+          2
+        end
+      end
+      
+      cache.write('some-key', 'some-value', expires_in: FakeDuration.new)
+
+      expect(cache.read('some-key')).not_to be_nil
+      sleep 1.01
       expect(cache.read('some-key')).not_to be_nil
       sleep 1.01
       expect(cache.read('some-key')).to be_nil
