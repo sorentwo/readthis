@@ -1,5 +1,10 @@
 ## Unreleased
 
+- Added: The `:expires_in` option can now be an object which responds to the 
+  `to_i` method, rather than having to be a `Fixnum`. This is mainly to add
+  support for specifiying the `:expires_in` option by passing in 
+  `ActiveSupport::Duration` objects, although any object which responds to
+  `to_i` will work. Added by @tobinibot.
 - Fixed: Handle the case when `nil` is explicitly passed as options to `fetch`.
 - Changed: All errors now extend from a base `ReadthisError`.
 
