@@ -14,7 +14,7 @@ RSpec.describe Readthis::Cache do
       expect(cache.options).to eq(namespace: 'cache', expires_in: 1)
     end
     
-    it 'handles ActiveSupport:Duration objects as expires_in values' do
+    it 'handles objects as expires_in values' do
       class FakeDuration
         def to_i
           120
