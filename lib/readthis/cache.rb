@@ -355,7 +355,7 @@ module Readthis
     end
 
     def merged_options(options)
-      @options.merge(options || {})
+      (options || {}).merge!(@options)
     end
 
     def pool_options(options)
