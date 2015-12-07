@@ -67,6 +67,22 @@ RSpec.describe Readthis::Cache do
       expect(cache.read('some-key')).to be_nil
     end
 
+    it 'uses an object for custom expiration' do
+      class FakeDuration
+        def to_i
+          2
+        end
+      end
+      
+      cache.write('some-key', 'some-value', expires_in: FakeDuration.new)
+
+      expect(cache.read('some-key')).not_to be_nil
+      sleep 1.01
+      expect(cache.read('some-key')).not_to be_nil
+      sleep 1.01
+      expect(cache.read('some-key')).to be_nil
+    end
+
     it 'expands non-string keys' do
       key_obj = double(cache_key: 'custom')
 

@@ -355,6 +355,10 @@ module Readthis
     end
 
     def merged_options(options)
+      if options != nil and options[:expires_in] and options[:expires_in].respond_to?(:to_i)
+        options[:expires_in] = options[:expires_in].to_i
+      end
+      
       (options || {}).merge!(@options)
     end
 
