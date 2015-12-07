@@ -66,7 +66,7 @@ RSpec.describe Readthis::Cache do
       sleep 1.01
       expect(cache.read('some-key')).to be_nil
     end
-    
+
     it 'expands non-string keys' do
       key_obj = double(cache_key: 'custom')
 
