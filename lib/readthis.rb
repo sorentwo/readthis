@@ -17,7 +17,26 @@ module Readthis
     @serializers ||= Readthis::Serializers.new
   end
 
+  # Indicates whether connection error tolerance is enabled. With tolerance
+  # enabled every operation will return a `nil` value.
+  #
+  # @returns [Boolean] True for enabled, false for disabled
+  #
   def fault_tolerant?
-    true
+    !!@fault_tolerant
+  end
+
+  # Toggle fault tolerance for connection errors.
+  #
+  # @param [Boolean] The new value for fault tolerance
+  #
+  def fault_tolerant=(value)
+    @fault_tolerant = value
+  end
+
+  # @private
+  def reset!
+    @fault_tolerant = nil
+    @serializers = nil
   end
 end

@@ -167,7 +167,9 @@ RSpec.describe Readthis::Cache do
       expect(cache.fetch('great-key', nil)).to eq('great')
     end
 
-    it 'serves computed content when the cache is down' do
+    it 'serves computed content when the cache is down and tolerance is enabled' do
+      Readthis.fault_tolerant = true
+
       allow(cache.pool).to receive(:with).and_raise(Redis::CannotConnectError)
 
       computed = cache.fetch('error-key') { 'computed' }
