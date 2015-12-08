@@ -48,19 +48,15 @@ RSpec.describe Readthis::Cache do
     end
 
     it 'uses a custom expiration' do
-      cache.write('some-key', 'some-value', expires_in: 1)
-
-      expect(cache.read('some-key')).not_to be_nil
-      sleep 1.01
-      expect(cache.read('some-key')).to be_nil
-    end
-    
-    it 'uses a custom expiration version 2' do
       cache = Readthis::Cache.new(namespace: 'cache', expires_in: 86400)
+
+      cache.write('some-key', 'some-value')
       cache.write('other-key', 'other-value', expires_in: 1)
 
+      expect(cache.read('some-key')).not_to be_nil
       expect(cache.read('other-key')).not_to be_nil
       sleep 1.01
+      expect(cache.read('some-key')).not_to be_nil
       expect(cache.read('other-key')).to be_nil
     end
 
