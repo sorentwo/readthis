@@ -166,6 +166,14 @@ RSpec.describe Readthis::Cache do
       cache.write('great-key', 'great')
       expect(cache.fetch('great-key', nil)).to eq('great')
     end
+
+    it 'serves computed content when the cache is down' do
+      allow(cache.pool).to receive(:with).and_raise(Redis::CannotConnectError)
+
+      computed = cache.fetch('error-key') { 'computed' }
+
+      expect(computed).to eq('computed')
+    end
   end
 
   describe '#read_multi' do

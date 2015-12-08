@@ -16,4 +16,8 @@ module Readthis
   def serializers
     @serializers ||= Readthis::Serializers.new
   end
+
+  def fault_tolerant?
+    true
+  end
 end
