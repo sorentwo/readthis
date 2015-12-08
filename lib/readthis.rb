@@ -23,7 +23,7 @@ module Readthis
   # @returns [Boolean] True for enabled, false for disabled
   #
   def fault_tolerant?
-    !!@fault_tolerant
+    @fault_tolerant
   end
 
   # Toggle fault tolerance for connection errors.
