@@ -1,3 +1,12 @@
+## Unreleased
+
+- Added: Global connection fault tolerance. Any Redis connection error will
+  raise be caught and a `nil` value will be returned instead. For `fetch`
+  operations that means the block will yielded, if provided.
+  [readthis#26][issue-26]
+
+[issue-26]: https://github.com/sorentwo/readthis/issues/26
+
 ## v1.1.0 2015-12-07
 
 - Fixed: Stop overwriting specific options with the default options. [issue-28].

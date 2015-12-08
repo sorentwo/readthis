@@ -137,6 +137,19 @@ sticky and a flag is stored with each cached value. If you subsequently go to
 deserialize values and haven't configured the same serializers in the same order
 your application will raise errors.
 
+## Fault Tolerance
+
+In some situations it is desirable to keep serving requests from disk or the
+database if Redis crashes. This can be achieved wiht connection fault tolerance
+by enabling it at the top level:
+
+```ruby
+Readthis.fault_tolerant = true
+```
+
+The default value is `false`, because while it may work for `fetch` operations,
+it isn't compatible with other state-based commands like `increment`.
+
 ## Differences From ActiveSupport::Cache
 
 Readthis supports all of standard cache methods except for the following:
