@@ -1,4 +1,4 @@
-## Unreleased
+## v1.1.0 2015-12-07
 
 - Fixed: Stop overwriting specific options with the default options. [issue-28].
   Discovered and fixed by @tobinibot.
