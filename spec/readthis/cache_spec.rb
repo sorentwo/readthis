@@ -48,7 +48,7 @@ RSpec.describe Readthis::Cache do
     end
 
     it 'uses a custom expiration' do
-      cache = Readthis::Cache.new(namespace: 'cache', expires_in: 86400)
+      cache = Readthis::Cache.new(namespace: 'cache', expires_in: 86_400)
 
       cache.write('some-key', 'some-value')
       cache.write('other-key', 'other-value', expires_in: 1)
