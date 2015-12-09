@@ -345,7 +345,7 @@ module Readthis
       instrument(operation, key) do
         pool.with(&block)
       end
-    rescue Redis::BaseConnectionError => error
+    rescue Redis::BaseError => error
       raise error unless Readthis.fault_tolerant?
     end
 
