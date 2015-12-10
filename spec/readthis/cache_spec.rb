@@ -48,7 +48,7 @@ RSpec.describe Readthis::Cache do
     end
 
     it 'uses a custom expiration' do
-      cache = Readthis::Cache.new(namespace: 'cache', expires_in: 86400)
+      cache = Readthis::Cache.new(namespace: 'cache', expires_in: 86_400)
 
       cache.write('some-key', 'some-value')
       cache.write('other-key', 'other-value', expires_in: 1)
@@ -165,6 +165,16 @@ RSpec.describe Readthis::Cache do
     it 'gets an existing value when `options` are passed as nil' do
       cache.write('great-key', 'great')
       expect(cache.fetch('great-key', nil)).to eq('great')
+    end
+
+    it 'serves computed content when the cache is down and tolerance is enabled' do
+      Readthis.fault_tolerant = true
+
+      allow(cache.pool).to receive(:with).and_raise(Redis::CannotConnectError)
+
+      computed = cache.fetch('error-key') { 'computed' }
+
+      expect(computed).to eq('computed')
     end
   end
 
