@@ -1,4 +1,4 @@
-## Unreleased
+## v1.2.0 2015-12-16
 
 - Added: Global connection fault tolerance. Any Redis connection error will
   raise be caught and a `nil` value will be returned instead. For `fetch`
