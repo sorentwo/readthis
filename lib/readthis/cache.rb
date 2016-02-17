@@ -212,7 +212,7 @@ module Readthis
       return {} if keys.empty?
 
       invoke(:read_multi, keys) do |store|
-        values = store.mget(mapping).map { |value| entity.load(value) }
+        values = store.mget(*mapping).map { |value| entity.load(value) }
 
         keys.zip(values).to_h
       end
