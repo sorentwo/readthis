@@ -7,7 +7,7 @@
 
 Readthis is a drop in replacement for any ActiveSupport compliant cache. It
 emphasizes performance and simplicity and takes some cues from Dalli the popular
-Memcache client.
+Memcache client. It can also be used for [session storage](#session-storage).
 
 For new projects there isn't any reason to stick with Memcached. Redis is as
 fast, if not faster in many scenarios, and is far more likely to be used
@@ -171,6 +171,18 @@ Readthis supports all of standard cache methods except for the following:
 Like other `ActiveSupport::Cache` implementations it is possible to cache `nil`
 as a value. However, the fetch methods treat `nil` values as a cache miss and
 re-generate/re-cache the value. Caching `nil` isn't recommended.
+
+## Session storage
+
+By using [ActionDispatch::Session::CacheStore][cache-store] it's possible to reuse `:readthis_store` or specify a new Readthis cache store for storing sessions.
+
+```ruby
+Rails.application.config.session_store :cache_store
+```
+
+To specify a separate Readthis cache store you can use the `:cache` option.
+
+[cache-store]: http://api.rubyonrails.org/classes/ActionDispatch/Session/CacheStore.html
 
 ## Contributing
 
