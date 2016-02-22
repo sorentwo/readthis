@@ -150,6 +150,16 @@ Readthis.fault_tolerant = true
 The default value is `false`, because while it may work for `fetch` operations,
 it isn't compatible with other state-based commands like `increment`.
 
+## Running Arbitrary Redis Commands
+
+Readthis provides access to the underlying Redis connection pool, allowing you
+to run arbitrary commands directly through the cache instance. For example, if
+you wanted to expire a key manually using an instance `Rails.cache`:
+
+```ruby
+Rails.cache.pool.with { |client| client.expire('foo-key', 60) }
+```
+
 ## Differences From ActiveSupport::Cache
 
 Readthis supports all of standard cache methods except for the following:
