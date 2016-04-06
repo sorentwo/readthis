@@ -5,9 +5,10 @@
 
 # Readthis
 
-Readthis is a drop in replacement for any ActiveSupport compliant cache. It
-emphasizes performance and simplicity and takes some cues from Dalli the popular
-Memcache client. It can also be used for [session storage](#session-storage).
+Readthis is a Redis backed cache client for Ruby. It is a drop in replacement
+for any `ActiveSupport` compliant cache and can also be used for [session
+storage](#session-storage).  Above all Readthis emphasizes performance,
+simplicity, and explicitness.
 
 For new projects there isn't any reason to stick with Memcached. Redis is as
 fast, if not faster in many scenarios, and is far more likely to be used
@@ -65,24 +66,29 @@ instances have numerous benefits like: more predictable performance, avoiding
 expires in favor of LRU, and tuning the persistence mechanism. See [Optimizing
 Redis Usage for Caching][optimizing-usage] for more details.
 
-[optimizing-usage]: http://sorentwo.com/2015/07/27/optimizing-redis-usage-for-caching.html
-
-At the very least you'll want to use a specific database for caching. In the
+At the very least, you'll want to use a specific database for caching. In the
 event the database needs to be purged you can do so with a single `clear`
 command, rather than finding all keys in a namespace and deleting them.
 Appending a number between 0 and 15 will specify the redis database, which
-defaults to 0. For example, using database 2:
+defaults to `0`. For example, using database `2`:
 
 ```bash
 REDIS_URL=redis://localhost:6379/2
 ```
+
+[optimizing-usage]: http://sorentwo.com/2015/07/27/optimizing-redis-usage-for-caching.html
 
 ### Expiration
 
 Be sure to use an integer value when setting expiration time. The default
 representation of `ActiveSupport::Duration` values won't work when setting
 expiration time, which will cause all keys to have `-1` as the TTL. Expiration
-values are always cast as an integer on write.
+values are always cast as an integer on write. For example:
+
+```ruby
+Readthis::Cache.new(expires_in: 1.week) # don't do this
+Readthis::Cache.new(expires_in: 1.week.to_i) # do this
+```
 
 ### Compression
 
@@ -132,7 +138,7 @@ Readthis.serializers.freeze!
 Readthis::Cache.new(marshal: Oj)
 ```
 
-Be aware that the order in which you add serializers matters. Serializers are
+Be aware that the *order in which you add serializers matters*. Serializers are
 sticky and a flag is stored with each cached value. If you subsequently go to
 deserialize values and haven't configured the same serializers in the same order
 your application will raise errors.
@@ -140,7 +146,7 @@ your application will raise errors.
 ## Fault Tolerance
 
 In some situations it is desirable to keep serving requests from disk or the
-database if Redis crashes. This can be achieved wiht connection fault tolerance
+database if Redis crashes. This can be achieved with connection fault tolerance
 by enabling it at the top level:
 
 ```ruby
@@ -154,7 +160,7 @@ it isn't compatible with other state-based commands like `increment`.
 
 Readthis provides access to the underlying Redis connection pool, allowing you
 to run arbitrary commands directly through the cache instance. For example, if
-you wanted to expire a key manually using an instance `Rails.cache`:
+you wanted to expire a key manually using an instance of `Rails.cache`:
 
 ```ruby
 Rails.cache.pool.with { |client| client.expire('foo-key', 60) }
@@ -175,15 +181,23 @@ Like other `ActiveSupport::Cache` implementations it is possible to cache `nil`
 as a value. However, the fetch methods treat `nil` values as a cache miss and
 re-generate/re-cache the value. Caching `nil` isn't recommended.
 
-## Session storage
+## Session Storage
 
-By using [ActionDispatch::Session::CacheStore][cache-store] it's possible to reuse `:readthis_store` or specify a new Readthis cache store for storing sessions.
+By using [ActionDispatch::Session::CacheStore][cache-store] it's possible to
+reuse `:readthis_store` or specify a new Readthis cache store for storing
+sessions.
 
 ```ruby
 Rails.application.config.session_store :cache_store
 ```
 
-To specify a separate Readthis cache store you can use the `:cache` option.
+To specify a separate Readthis instance you can use the `:cache` option:
+
+```ruby
+Rails.application.config.session_store :cache_store,
+  cache: Readthis::Cache.new,
+  expire_after: 2.weeks.to_i
+```
 
 [cache-store]: http://api.rubyonrails.org/classes/ActionDispatch/Session/CacheStore.html
 
