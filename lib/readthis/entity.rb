@@ -40,7 +40,7 @@ module Readthis
     #
     # @example Dumping a value with overrides
     #
-    #   entity.dump(string, compress: false)
+    #   entity.dump(string, compress: false, marshal: JSON)
     #
     def dump(value, options = {})
       compress  = with_fallback(options, :compress)
