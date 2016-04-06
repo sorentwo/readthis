@@ -1,3 +1,10 @@
+## v1.2.1 2016-04-06
+
+- Fixed: Splat arguments passed to `mget` within Readthis::Cache#read_multi.
+  From [issue-34] submitted by @kyohei-shimada.
+
+[issue-34]: https://github.com/sorentwo/readthis/pull/32
+
 ## v1.2.0 2015-12-16
 
 - Added: Global connection fault tolerance. Any Redis connection error will
