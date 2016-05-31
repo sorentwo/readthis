@@ -60,6 +60,16 @@ RSpec.describe Readthis::Cache do
       expect(cache.read('other-key')).to be_nil
     end
 
+    it 'rounds floats to a valid expiration value' do
+      cache = Readthis::Cache.new(namespace: 'cache')
+
+      cache.write('some-key', 'some-value', expires_in: 0.1)
+
+      expect(cache.read('some-key')).not_to be_nil
+      sleep 1.01
+      expect(cache.read('some-key')).to be_nil
+    end
+
     it 'expands non-string keys' do
       key_obj = double(cache_key: 'custom')
 

@@ -315,7 +315,7 @@ module Readthis
       dumped = entity.dump(value, options)
 
       if expiration = options[:expires_in]
-        store.setex(namespaced, expiration.to_i, dumped)
+        store.setex(namespaced, Float(expiration).ceil, dumped)
       else
         store.set(namespaced, dumped)
       end
