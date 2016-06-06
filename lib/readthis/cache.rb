@@ -146,6 +146,14 @@ module Readthis
         write(key, value, options)
       end
 
+      if options[:keep_alive]
+        key = namespaced_key(name, merged_options(options))
+        expiration = merged_options(options)[:expires_in]
+        invoke(:keep_alive, key) do |store|
+          store.expire key, Float(expiration).ceil
+        end
+      end
+
       value
     end
 
