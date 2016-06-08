@@ -83,6 +83,17 @@ RSpec.describe Readthis::Cache do
     it 'gracefully handles nil options' do
       expect { cache.read('whatever', nil) }.not_to raise_error
     end
+
+    it 'can refresh the expiration of an entity' do
+      cache = Readthis::Cache.new(refresh: true)
+
+      cache.write('some-key', 'some-value', expires_in: 1)
+      cache.read('some-key', expires_in: 2)
+
+      cache.pool.with do |client|
+        expect(client.ttl('some-key')).to eq(2)
+      end
+    end
   end
 
   describe 'serializers' do
@@ -214,6 +225,20 @@ RSpec.describe Readthis::Cache do
     it 'returns {} with no keys' do
       expect(cache.read_multi(namespace: 'cache')).to eq({})
     end
+
+    it 'refreshes each key that is read' do
+      cache = Readthis::Cache.new(refresh: true)
+
+      cache.write('a', 1, expires_in: 1)
+      cache.write('b', 2, expires_in: 1)
+
+      cache.read_multi('a', 'b', expires_in: 2)
+
+      cache.pool.with do |client|
+        expect(client.ttl('a')).to eq(2)
+        expect(client.ttl('b')).to eq(2)
+      end
+    end
   end
 
   describe '#write_multi' do
@@ -338,10 +363,10 @@ RSpec.describe Readthis::Cache do
       cache.read('a')
 
       expect(events.length).to eq(2)
-      expect(events.map(&:name)).to eq(%w[
+      expect(events.map(&:name)).to eq %w[
         cache_write.active_support
         cache_read.active_support
-      ])
+      ]
     end
   end
 end

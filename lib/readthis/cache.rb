@@ -60,10 +60,14 @@ module Readthis
     #   cache.read('matched') # => 'some value'
     #
     def read(key, options = {})
-      invoke(:read, key) do |store|
-        value = store.get(namespaced_key(key, merged_options(options)))
+      options = merged_options(options)
 
-        entity.load(value)
+      invoke(:read, key) do |store|
+        key = namespaced_key(key, options)
+
+        store.expire(key, options[:expires_in]) if options[:refresh]
+
+        entity.load(store.get(key))
       end
     end
 
@@ -130,7 +134,7 @@ module Readthis
     #   cache.fetch('city') do
     #     'Duckburgh'
     #   end
-    #   cache.fetch('city')   # => "Duckburgh"
+    #   cache.fetch('city') # => "Duckburgh"
     #
     # @example Cache Miss
     #
@@ -213,6 +217,12 @@ module Readthis
 
       invoke(:read_multi, keys) do |store|
         values = store.mget(*mapping).map { |value| entity.load(value) }
+
+        if options[:refresh]
+          store.multi do
+            mapping.each { |key| store.expire(key, options[:expires_in]) }
+          end
+        end
 
         keys.zip(values).to_h
       end
