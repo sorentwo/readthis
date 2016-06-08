@@ -90,6 +90,17 @@ Readthis::Cache.new(expires_in: 1.week) # don't do this
 Readthis::Cache.new(expires_in: 1.week.to_i) # do this
 ```
 
+By using the `refresh` option the TTL for keys can be refreshed automatically
+every time the key is read. This is helpful for ensuring commonly hit keys are
+kept cached, effectively making the cache a hybrid LRU.
+
+```ruby
+Readthis::Cache.new(refresh: true)
+```
+
+Be aware that `refresh` adds a slight overhead to all read operations, as they
+are now all write operations as well.
+
 ### Compression
 
 Compression can be enabled for all actions by passing the `compress` flag. By
