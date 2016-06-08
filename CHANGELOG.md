@@ -1,7 +1,16 @@
+## v1.3.0 2016-06-08
+
+- Added: Key expiration refreshing on read. When `refresh: true` is set as an
+  instance or method option all read operations will refresh the expiration.
+- Fixed: Convert float `expires_in` values to the nearest valid integer.
+  Typically any value less than 1 was rounded down to 0, which is an invalid
+  expiration. Now a value of `0.1` will be rounded up to `1`, the lowest
+  possible expiration.
+
 ## v1.2.1 2016-04-06
 
 - Fixed: Splat arguments passed to `mget` within Readthis::Cache#read_multi.
-  From [issue-34] submitted by @kyohei-shimada.
+  From [readthis#34][issue-34] submitted by @kyohei-shimada.
 
 [issue-34]: https://github.com/sorentwo/readthis/pull/32
 
