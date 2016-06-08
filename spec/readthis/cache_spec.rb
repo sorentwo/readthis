@@ -88,9 +88,12 @@ RSpec.describe Readthis::Cache do
       cache = Readthis::Cache.new(refresh: true)
 
       cache.write('some-key', 'some-value', expires_in: 1)
-      cache.read('some-key', expires_in: 2)
 
+      cache.read('some-key', expires_in: 2)
       expect(cache).to have_ttl('some-key' => 2)
+
+      cache.read('some-key', expires_in: 0.1)
+      expect(cache).to have_ttl('some-key' => 1)
     end
   end
 

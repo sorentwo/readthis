@@ -4,7 +4,7 @@ module RedisMatchers
   matcher :have_ttl do |expected|
     match do |cache|
       cache.pool.with do |client|
-        expected.each do |key, value|
+        expected.all? do |(key, value)|
           client.ttl(key) == value
         end
       end

@@ -322,7 +322,9 @@ module Readthis
       return unless options[:refresh] && options[:expires_in]
 
       store.multi do
-        Array(keys).each { |key| store.expire(key, options[:expires_in]) }
+        Array(keys).each do |key|
+          store.expire(key, coerce_expiration(options[:expires_in]))
+        end
       end
     end
 
@@ -331,7 +333,7 @@ module Readthis
       dumped = entity.dump(value, options)
 
       if expiration = options[:expires_in]
-        store.setex(namespaced, Float(expiration).ceil, dumped)
+        store.setex(namespaced, coerce_expiration(expiration), dumped)
       else
         store.set(namespaced, dumped)
       end
@@ -340,10 +342,13 @@ module Readthis
     private
 
     def alter(key, amount, options)
-      number = read(key, options)
-      delta  = number.to_i + amount
+      delta = read(key, options).to_i + amount
       write(key, delta, options)
       delta
+    end
+
+    def coerce_expiration(expires_in)
+      Float(expires_in).ceil
     end
 
     def instrument(name, key)
