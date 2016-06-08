@@ -1,6 +1,9 @@
 require 'readthis'
+require 'matchers/redis_matchers'
 
 RSpec.describe Readthis::Cache do
+  include RedisMatchers
+
   let(:cache) { Readthis::Cache.new }
 
   after do
@@ -48,26 +51,23 @@ RSpec.describe Readthis::Cache do
     end
 
     it 'uses a custom expiration' do
-      cache = Readthis::Cache.new(namespace: 'cache', expires_in: 86_400)
+      cache = Readthis::Cache.new(expires_in: 10)
 
       cache.write('some-key', 'some-value')
       cache.write('other-key', 'other-value', expires_in: 1)
 
       expect(cache.read('some-key')).not_to be_nil
       expect(cache.read('other-key')).not_to be_nil
-      sleep 1.01
-      expect(cache.read('some-key')).not_to be_nil
-      expect(cache.read('other-key')).to be_nil
+
+      expect(cache).to have_ttl('some-key' => 10, 'other-key' => 1)
     end
 
     it 'rounds floats to a valid expiration value' do
-      cache = Readthis::Cache.new(namespace: 'cache')
+      cache = Readthis::Cache.new
 
       cache.write('some-key', 'some-value', expires_in: 0.1)
 
-      expect(cache.read('some-key')).not_to be_nil
-      sleep 1.01
-      expect(cache.read('some-key')).to be_nil
+      expect(cache).to have_ttl('some-key' => 1)
     end
 
     it 'expands non-string keys' do
@@ -90,9 +90,7 @@ RSpec.describe Readthis::Cache do
       cache.write('some-key', 'some-value', expires_in: 1)
       cache.read('some-key', expires_in: 2)
 
-      cache.pool.with do |client|
-        expect(client.ttl('some-key')).to eq(2)
-      end
+      expect(cache).to have_ttl('some-key' => 2)
     end
   end
 
@@ -234,10 +232,7 @@ RSpec.describe Readthis::Cache do
 
       cache.read_multi('a', 'b', expires_in: 2)
 
-      cache.pool.with do |client|
-        expect(client.ttl('a')).to eq(2)
-        expect(client.ttl('b')).to eq(2)
-      end
+      expect(cache).to have_ttl('a' => 2, 'b' => 2)
     end
   end
 
@@ -259,8 +254,8 @@ RSpec.describe Readthis::Cache do
 
       expect(cache.read('a')).to be_nil
       expect(cache.read('a', namespace: 'multi')).to eq(1)
-      sleep 1.01
-      expect(cache.read('a', namespace: 'multi')).to be_nil
+
+      expect(cache).to have_ttl('multi:a' => 1)
     end
   end
 
