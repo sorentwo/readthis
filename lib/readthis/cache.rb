@@ -22,6 +22,7 @@ module Readthis
     # @option [Boolean] :compress (false) Enable or disable automatic compression
     # @option [Number]  :compression_threshold (8k) The size a string must be for compression
     # @option [Number]  :expires_in The number of seconds until an entry expires
+    # @option [Boolean] :refresh (false) Automatically refresh key expiration when read
     # @option [Module]  :marshal (Marshal) Any module that responds to `dump` and `load`
     # @option [String]  :namespace Prefix used to namespace entries
     # @option [Number]  :pool_size (5) The number of threads in the pool
@@ -65,7 +66,7 @@ module Readthis
       invoke(:read, key) do |store|
         key = namespaced_key(key, options)
 
-        store.expire(key, options[:expires_in]) if options[:refresh]
+        refresh_entity(key, store, options)
 
         entity.load(store.get(key))
       end
@@ -101,6 +102,7 @@ module Readthis
     #
     #   cache.delete('existing-key') # => true
     #   cache.delete('random-key')   # => false
+    #
     def delete(key, options = {})
       namespaced = namespaced_key(key, merged_options(options))
 
@@ -218,11 +220,7 @@ module Readthis
       invoke(:read_multi, keys) do |store|
         values = store.mget(*mapping).map { |value| entity.load(value) }
 
-        if options[:refresh]
-          store.multi do
-            mapping.each { |key| store.expire(key, options[:expires_in]) }
-          end
-        end
+        refresh_entity(mapping, store, options)
 
         keys.zip(values).to_h
       end
@@ -319,6 +317,14 @@ module Readthis
     end
 
     protected
+
+    def refresh_entity(keys, store, options)
+      return unless options[:refresh] && options[:expires_in]
+
+      store.multi do
+        Array(keys).each { |key| store.expire(key, options[:expires_in]) }
+      end
+    end
 
     def write_entity(key, value, store, options)
       namespaced = namespaced_key(key, options)
