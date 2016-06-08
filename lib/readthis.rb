@@ -4,8 +4,6 @@ require 'readthis/serializers'
 require 'readthis/version'
 
 module Readthis
-  extend self
-
   # The current, global, instance of serializers that is used by all cache
   # instances.
   #
@@ -39,4 +37,6 @@ module Readthis
     @fault_tolerant = nil
     @serializers = nil
   end
+
+  module_function :serializers, :fault_tolerant?, :fault_tolerant=, :reset!
 end

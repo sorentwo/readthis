@@ -7,6 +7,10 @@ AllCops:
     - 'pkg/**/*'
     - 'tmp/**/*'
     - 'vendor/**/*'
+  TargetRubyVersion: 2.3
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
 
 Metrics/LineLength:
   Max: 100
@@ -14,89 +18,16 @@ Metrics/LineLength:
 Metrics/ClassLength:
   Max: 200
 
-Metrics/ModuleLength:
-  Max: 200
-
 Metrics/MethodLength:
   Max: 15
-
-Metrics/ParameterLists:
-  Max: 8
-
-Metrics/AbcSize:
-  Enabled: false
-
-Metrics/CyclomaticComplexity:
-  Enabled: false
-
-Metrics/PerceivedComplexity:
-  Enabled: false
 
 Documentation:
   Enabled: false # TODO: Enable again once we have more docs
 
-Style/AlignParameters:
-  EnforcedStyle: with_fixed_indentation
-
-Style/ModuleFunction:
+Style/EmptyCaseCondition:
   Enabled: false
-
-Style/StringLiterals:
-  EnforcedStyle: single_quotes
-
-Style/StringLiteralsInInterpolation:
-  EnforcedStyle: double_quotes
-
-Style/ClosingParenthesisIndentation:
-  Enabled: false
-
-Style/OneLineConditional:
-  Enabled: false
-
-Style/AndOr:
-  Enabled: false
-
-Style/Not:
-  Enabled: false
-
-Style/AccessModifierIndentation:
-  EnforcedStyle: indent
-
-Style/CaseIndentation:
-  IndentWhenRelativeTo: case
-  SupportedStyles:
-    - case
-    - end
-  IndentOneStep: false
 
 Style/PercentLiteralDelimiters:
   PreferredDelimiters:
     '%w': "[]"
     '%W': "[]"
-
-Style/SignalException:
-  Enabled: false
-
-Style/IndentationWidth:
-  Enabled: false
-
-Style/TrivialAccessors:
-  ExactNameMatch: true
-
-Lint/AssignmentInCondition:
-  Enabled: false
-
-Lint/EndAlignment:
-  AlignWith: variable
-
-Lint/DefEndAlignment:
-  Enabled: true
-
-Lint/HandleExceptions:
-  Enabled: false
-
-Style/SpecialGlobalVars:
-  Enabled: false
-
-Style/TrivialAccessors:
-  Enabled: false

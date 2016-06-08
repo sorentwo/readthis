@@ -18,18 +18,19 @@ module Readthis
 
     # Creates a new Readthis::Cache object with the given options.
     #
-    # @option [Hash]    :redis Options that will be passed to the underlying redis connection
+    # @option [Hash]    :redis Options that will be passed to the redis connection
     # @option [Boolean] :compress (false) Enable or disable automatic compression
-    # @option [Number]  :compression_threshold (8k) The size a string must be for compression
+    # @option [Number]  :compression_threshold (8k) Minimum string size for compression
     # @option [Number]  :expires_in The number of seconds until an entry expires
-    # @option [Boolean] :refresh (false) Automatically refresh key expiration when read
-    # @option [Module]  :marshal (Marshal) Any module that responds to `dump` and `load`
+    # @option [Boolean] :refresh (false) Automatically refresh key expiration
+    # @option [Module]  :marshal (Marshal) Module that responds to `dump` and `load`
     # @option [String]  :namespace Prefix used to namespace entries
     # @option [Number]  :pool_size (5) The number of threads in the pool
     # @option [Number]  :pool_timeout (5) How long before a thread times out
     #
     # @example Create a new cache instance
-    #   Readthis::Cache.new(namespace: 'cache', redis: { url: 'redis://localhost:6379/0' })
+    #   Readthis::Cache.new(namespace: 'cache',
+    #                       redis: { url: 'redis://localhost:6379/0' })
     #
     # @example Create a compressed cache instance
     #   Readthis::Cache.new(compress: true, compression_threshold: 2048)
@@ -332,7 +333,7 @@ module Readthis
       namespaced = namespaced_key(key, options)
       dumped = entity.dump(value, options)
 
-      if expiration = options[:expires_in]
+      if (expiration = options[:expires_in])
         store.setex(namespaced, coerce_expiration(expiration), dumped)
       else
         store.set(namespaced, dumped)

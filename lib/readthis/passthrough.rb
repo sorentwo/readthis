@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Readthis
   module Passthrough
     def self.dump(value)

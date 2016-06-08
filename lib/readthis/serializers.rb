@@ -36,9 +36,9 @@ module Readthis
     def <<(serializer)
       case
       when serializers.frozen?
-        fail SerializersFrozenError
+        raise SerializersFrozenError
       when serializers.length > SERIALIZER_LIMIT
-        fail SerializersLimitError
+        raise SerializersLimitError
       else
         @serializers[serializer] = flags.max.succ
         @inverted = @serializers.invert
@@ -76,7 +76,7 @@ module Readthis
       flag = serializers[serializer]
 
       unless flag
-        fail UnknownSerializerError, "'#{serializer}' hasn't been configured"
+        raise UnknownSerializerError, "'#{serializer}' hasn't been configured"
       end
 
       flag
