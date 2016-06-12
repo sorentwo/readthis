@@ -1,12 +1,13 @@
 require 'readthis/entity'
 require 'readthis/expanders'
 require 'readthis/passthrough'
+require 'readthis/scripts'
 require 'redis'
 require 'connection_pool'
 
 module Readthis
   class Cache
-    attr_reader :entity, :notifications, :options, :pool
+    attr_reader :entity, :notifications, :options, :pool, :scripts
 
     # Provide a class level lookup of the proper notifications module.
     # Instrumention is expected to occur within applications that have
@@ -47,6 +48,8 @@ module Readthis
       @pool = ConnectionPool.new(pool_options(options)) do
         Redis.new(options.fetch(:redis, {}))
       end
+
+      @scripts = Readthis::Scripts.new(pool)
     end
 
     # Fetches data from the cache, using the given key. If there is data in
@@ -322,11 +325,11 @@ module Readthis
     def refresh_entity(keys, store, options)
       return unless options[:refresh] && options[:expires_in]
 
-      store.multi do
-        Array(keys).each do |key|
-          store.expire(key, coerce_expiration(options[:expires_in]))
-        end
-      end
+      store.evalsha(
+        scripts.sha('mexpire'),
+        Array(keys),
+        [coerce_expiration(options[:expires_in])]
+      )
     end
 
     def write_entity(key, value, store, options)
