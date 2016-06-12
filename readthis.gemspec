@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = 'https://github.com/sorentwo/readthis'
   spec.license       = 'MIT'
 
-  spec.files         = `git ls-files lib spec README.md`.split($/)
+  spec.files         = `git ls-files lib spec script README.md`.split($/)
   spec.test_files    = spec.files.grep(%r{^(spec)/})
   spec.require_paths = ['lib']
 
