@@ -1,5 +1,3 @@
-require 'readthis/serializers'
-
 RSpec.describe Readthis::Serializers do
   CustomSerializer  = Class.new
   AnotherSerializer = Class.new

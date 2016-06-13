@@ -1,5 +1,3 @@
-require 'readthis/passthrough'
-
 RSpec.describe Readthis::Passthrough do
   describe '.load' do
     it 'passes through the provided value' do

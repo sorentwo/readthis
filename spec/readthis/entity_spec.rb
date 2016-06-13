@@ -1,4 +1,3 @@
-require 'readthis'
 require 'json'
 
 RSpec.describe Readthis::Entity do

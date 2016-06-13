@@ -1,4 +1,5 @@
 require 'coveralls'
+require 'readthis'
 
 Coveralls.wear!
 

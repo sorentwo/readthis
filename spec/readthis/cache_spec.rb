@@ -1,4 +1,3 @@
-require 'readthis'
 require 'matchers/redis_matchers'
 
 RSpec.describe Readthis::Cache do

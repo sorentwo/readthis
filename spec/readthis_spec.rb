@@ -1,5 +1,3 @@
-require 'readthis'
-
 RSpec.describe Readthis do
   describe '#serializers' do
     it 'lists currently configured serializers' do
