@@ -49,7 +49,7 @@ module Readthis
         Redis.new(options.fetch(:redis, {}))
       end
 
-      @scripts = Readthis::Scripts.new(pool)
+      @scripts = Readthis::Scripts.new
     end
 
     # Fetches data from the cache, using the given key. If there is data in
@@ -325,11 +325,9 @@ module Readthis
     def refresh_entity(keys, store, options)
       return unless options[:refresh] && options[:expires_in]
 
-      store.evalsha(
-        scripts.sha('mexpire'),
-        Array(keys),
-        [coerce_expiration(options[:expires_in])]
-      )
+      expiration = coerce_expiration(options[:expires_in])
+
+      scripts.run('mexpire', store, keys, expiration)
     end
 
     def write_entity(key, value, store, options)
