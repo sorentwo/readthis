@@ -1,10 +1,25 @@
 require 'bundler/setup'
 require 'bundler/gem_tasks'
-require 'rubocop/rake_task'
-require 'rspec/core/rake_task'
 
-RSpec::Core::RakeTask.new(:spec)
+begin
+  require 'rspec/core/rake_task'
+  RSpec::Core::RakeTask.new(:spec)
+rescue LoadError
+  puts 'rspec not loaded'
+end
 
-RuboCop::RakeTask.new
+begin
+  require 'rubocop/rake_task'
+  RuboCop::RakeTask.new
+rescue LoadError
+  puts 'rubocop not loaded'
+end
 
-task default: [:spec, :rubocop]
+begin
+  require 'yard'
+  YARD::Rake::YardocTask.new
+rescue LoadError
+  puts 'yard not loaded'
+end
+
+task default: [:rubocop, :spec]
