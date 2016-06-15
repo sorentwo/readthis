@@ -2,6 +2,7 @@
 [![Build Status](https://travis-ci.org/sorentwo/readthis.svg?branch=master)](https://travis-ci.org/sorentwo/readthis)
 [![Code Climate](https://codeclimate.com/github/sorentwo/readthis/badges/gpa.svg)](https://codeclimate.com/github/sorentwo/readthis)
 [![Coverage Status](https://coveralls.io/repos/sorentwo/readthis/badge.svg?branch=master&service=github)](https://coveralls.io/github/sorentwo/readthis?branch=master)
+[![Inline Docs](http://inch-ci.org/github/sorentwo/readthis.svg?branch=master)](http://inch-ci.org/github/sorentwo/readthis)
 
 # Readthis
 
