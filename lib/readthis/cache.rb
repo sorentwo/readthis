@@ -19,15 +19,15 @@ module Readthis
 
     # Creates a new Readthis::Cache object with the given options.
     #
-    # @option [Hash]    :redis Options that will be passed to the redis connection
-    # @option [Boolean] :compress (false) Enable or disable automatic compression
-    # @option [Number]  :compression_threshold (8k) Minimum string size for compression
-    # @option [Number]  :expires_in The number of seconds until an entry expires
-    # @option [Boolean] :refresh (false) Automatically refresh key expiration
-    # @option [Module]  :marshal (Marshal) Module that responds to `dump` and `load`
-    # @option [String]  :namespace Prefix used to namespace entries
-    # @option [Number]  :pool_size (5) The number of threads in the pool
-    # @option [Number]  :pool_timeout (5) How long before a thread times out
+    # @option options [Hash]    :redis Options that will be passed to the redis connection
+    # @option options [Boolean] :compress (false) Enable or disable automatic compression
+    # @option options [Number]  :compression_threshold (8k) Minimum string size for compression
+    # @option options [Number]  :expires_in The number of seconds until an entry expires
+    # @option options [Boolean] :refresh (false) Automatically refresh key expiration
+    # @option options [Module]  :marshal (Marshal) Module that responds to `dump` and `load`
+    # @option options [String]  :namespace Prefix used to namespace entries
+    # @option options [Number]  :pool_size (5) The number of threads in the pool
+    # @option options [Number]  :pool_timeout (5) How long before a thread times out
     #
     # @example Create a new cache instance
     #   Readthis::Cache.new(namespace: 'cache',
@@ -56,8 +56,8 @@ module Readthis
     # the cache with the given key, then that data is returned. Otherwise, nil
     # is returned.
     #
-    # @param [String] Key for lookup
-    # @param [Hash] Optional overrides
+    # @param [String] key Key for lookup
+    # @param [Hash] options Optional overrides
     #
     # @example
     #
@@ -79,8 +79,8 @@ module Readthis
     # Writes data to the cache using the given key. Will overwrite whatever
     # value is already stored at that key.
     #
-    # @param [String] Key for lookup
-    # @param [Hash] Optional overrides
+    # @param [String] key Key for lookup
+    # @param [Hash] options Optional overrides
     #
     # @example
     #
@@ -99,8 +99,8 @@ module Readthis
     # Delete the value stored at the specified key. Returns `true` if
     # anything was deleted, `false` otherwise.
     #
-    # @params [String] The key for lookup
-    # @params [Hash] Optional overrides
+    # @param [String] key The key for lookup
+    # @param [Hash] options Optional overrides
     #
     # @example
     #
@@ -124,10 +124,11 @@ module Readthis
     # the block will be written to the cache under the given cache key, and
     # that return value will be returned.
     #
-    # @param [String] Key for lookup
-    # @param [Block] Optional block for generating the value when missing
+    # @param [String] key Key for lookup
     # @param options [Hash] Optional overrides
     # @option options [Boolean] :force Force a cache miss
+    # @yield [String] Gives a missing key to the block, which is used to
+    #   generate the missing value
     #
     # @example Typical
     #
@@ -140,6 +141,7 @@ module Readthis
     #   cache.fetch('city') do
     #     'Duckburgh'
     #   end
+    #
     #   cache.fetch('city') # => "Duckburgh"
     #
     # @example Cache Miss
@@ -164,9 +166,9 @@ module Readthis
     # If the key doesn't exist it will be initialized at 0. If the key exists
     # but it isn't a Fixnum it will be initialized at 0.
     #
-    # @param [String] Key for lookup
-    # @param [Fixnum] Value to increment by
-    # @param [Hash] Optional overrides
+    # @param [String] key Key for lookup
+    # @param [Fixnum] amount Value to increment by
+    # @param [Hash] options Optional overrides
     #
     # @example
     #
@@ -185,9 +187,9 @@ module Readthis
     # If the key doesn't exist it will be initialized at 0. If the key exists
     # but it isn't a Fixnum it will be initialized at 0.
     #
-    # @param [String] Key for lookup
-    # @param [Fixnum] Value to decrement by
-    # @param [Hash] Optional overrides
+    # @param [String] key Key for lookup
+    # @param [Fixnum] amount Value to decrement by
+    # @param [Hash] options Optional overrides
     #
     # @example
     #
@@ -236,8 +238,8 @@ module Readthis
     #
     # This is a non-standard, but useful, cache method.
     #
-    # @param [Hash] Key value hash to write
-    # @param [Hash] Optional overrides
+    # @param [Hash] hash Key value hash to write
+    # @param [Hash] options Optional overrides
     #
     # @example
     #
@@ -294,8 +296,8 @@ module Readthis
 
     # Returns `true` if the cache contains an entry for the given key.
     #
-    # @param [String] Key for lookup
-    # @param [Hash] Optional overrides
+    # @param [String] key Key for lookup
+    # @param [Hash] options Optional overrides
     #
     # @example
     #
@@ -311,11 +313,12 @@ module Readthis
     # Clear the entire cache. This flushes the current database, no
     # globbing is applied.
     #
-    # @param [Hash] Options, only present for compatibility.
+    # @param [Hash] _options Options, only present for compatibility
     #
     # @example
     #
     #   cache.clear #=> 'OK'
+    #
     def clear(_options = nil)
       invoke(:clear, '*', &:flushdb)
     end

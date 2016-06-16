@@ -12,10 +12,10 @@ module Readthis
 
     # Run a named lua script with the provided keys and arguments.
     #
-    # @param [String] The script to run, without a `.lua` extension
-    # @param [#Store] A Redis client for storing and evaluating the script
-    # @param [Array] One or more keys to pass to the command
-    # @param [Array] One or more args to pass to the command
+    # @param [String] command The script to run, without a `.lua` extension
+    # @param [#Store] store A Redis client for storing and evaluating the script
+    # @param [Array] keys One or more keys to pass to the command
+    # @param [Array] args One or more args to pass to the command
     #
     # @return [Any] The Redis converted value returned on the script
     #

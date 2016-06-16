@@ -7,7 +7,7 @@ module Readthis
   # The current, global, instance of serializers that is used by all cache
   # instances.
   #
-  # @returns [Readthis::Serializers] An cached Serializers instance
+  # @return [Readthis::Serializers] An cached Serializers instance
   #
   # @see readthis/serializers
   #
@@ -18,7 +18,7 @@ module Readthis
   # Indicates whether connection error tolerance is enabled. With tolerance
   # enabled every operation will return a `nil` value.
   #
-  # @returns [Boolean] True for enabled, false for disabled
+  # @return [Boolean] True for enabled, false for disabled
   #
   def fault_tolerant?
     @fault_tolerant
@@ -26,7 +26,7 @@ module Readthis
 
   # Toggle fault tolerance for connection errors.
   #
-  # @param [Boolean] The new value for fault tolerance
+  # @param [Boolean] value The new value for fault tolerance
   #
   def fault_tolerant=(value)
     @fault_tolerant = value
