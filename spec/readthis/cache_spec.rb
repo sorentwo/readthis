@@ -172,6 +172,12 @@ RSpec.describe Readthis::Cache do
       expect(cache.read('missing-key')).to eq(value)
     end
 
+    it 'returns computed value when using passthrough marshalling' do
+      cache = Readthis::Cache.new(marshal: Readthis::Passthrough)
+      result = cache.fetch('missing-key') { 'value for you' }
+      expect(result).to eq('value for you')
+    end
+
     it 'does not set for a missing key without a block' do
       expect(cache.fetch('missing-key')).to be_nil
     end

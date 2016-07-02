@@ -3,7 +3,7 @@
 module Readthis
   module Passthrough
     def self.dump(value)
-      value
+      value.dup
     end
 
     def self.load(value)
