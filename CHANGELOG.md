@@ -1,3 +1,23 @@
+## v1.4.0 2016-07-04
+
+- Added: `Readthis::Script`, for dynamically loading and executing lua scripts.
+- Added: Use custom `mexpire` to boost refresh performance with multiple keys.
+  It is still slower than raw read performance, but much faster than naive
+  `multi` expire (~1.5x faster).
+- Changed: Generally tighten inline documentation.
+- Fixed: Duplicate objects during `dump` operation when using the passthrough.
+  When using `fetch` the original value was returned, including any encoding
+  information that was prepended. From [readthis#44][issue-44] by @kagux
+- Fixed: Only account for 3 bits when detecting serialized values, which fixes
+  detection with 4 or more serializers configured. From [readthis#45][issue-45]
+  by @kagux.
+- Fixed: The max serializer guard would allow up to 8 serializers, which wasn't
+  caught by an improper spec. From [readthis#46][issue-46] by @epilgrim.
+
+[issue-44]: https://github.com/sorentwo/readthis/pull/44
+[issue-45]: https://github.com/sorentwo/readthis/pull/45
+[issue-46]: https://github.com/sorentwo/readthis/pull/46
+
 ## v1.3.0 2016-06-08
 
 - Added: Key expiration refreshing on read. When `refresh: true` is set as an
