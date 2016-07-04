@@ -13,7 +13,7 @@ module Readthis
     }.freeze
 
     # The hard serializer limit, based on the number of possible values within
-    # a single 8bit integer.
+    # a single 3bit integer.
     SERIALIZER_LIMIT = 7
 
     attr_reader :serializers, :inverted
@@ -96,7 +96,7 @@ module Readthis
     #   serializers.rassoc(1) #=> Marshal
     #
     def rassoc(flag)
-      inverted[flag & inverted.length]
+      inverted[flag & SERIALIZER_LIMIT]
     end
 
     # @private
