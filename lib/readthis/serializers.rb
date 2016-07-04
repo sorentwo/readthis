@@ -41,7 +41,7 @@ module Readthis
       case
       when serializers.frozen?
         raise SerializersFrozenError
-      when serializers.length > SERIALIZER_LIMIT
+      when serializers.length >= SERIALIZER_LIMIT
         raise SerializersLimitError
       else
         @serializers[serializer] = flags.max.succ
