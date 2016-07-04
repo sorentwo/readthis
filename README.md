@@ -185,7 +185,8 @@ Readthis supports all of standard cache methods except for the following:
 * `cleanup` - Redis does this with TTL or LRU already.
 * `delete_matched` - You really don't want to perform key matching operations in
   Redis. They are linear time and only support basic globbing.
-* `mute` and `silence!` - You can subscribe to the events `/cache*+active_support/` with `ActiveSupport::Notifications` to [log cache calls manually][notifications].
+* `mute` and `silence!` - You can subscribe to the events `/cache*.active_support/`
+  with `ActiveSupport::Notifications` to [log cache calls manually][notifications].
 
 [notifications]: https://github.com/sorentwo/readthis/issues/22#issuecomment-142595938
 

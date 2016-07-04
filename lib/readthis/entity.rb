@@ -1,8 +1,10 @@
 require 'zlib'
 
 module Readthis
+  # An instance of the Entity class is used to handle `load` and `dump`
+  # operations on cached values.
   class Entity
-    # Without any configuration these are the options used to load and unload
+    # Unless they are overridden, these are the options used to load and unload
     # every value.
     DEFAULT_OPTIONS = {
       compress:  false,
@@ -21,9 +23,12 @@ module Readthis
     # automatically be used again when loading, regardless of how current
     # options are set.
     #
-    # @option [Boolean] :compress (false) Enable or disable automatic compression
-    # @option [Module]  :marshal (Marshal) Any module that responds to `dump` and `load`
-    # @option [Number]  :threshold (8k) The size a string must be for compression
+    # @option [Boolean] :compress (false) Enable or disable automatic
+    #   compression
+    # @option [Module]  :marshal (Marshal) Any module that responds to `dump`
+    #   and `load`
+    # @option [Number]  :threshold (8k) The size a string must be for
+    #   compression
     #
     def initialize(options = {})
       @options = DEFAULT_OPTIONS.merge(options)
