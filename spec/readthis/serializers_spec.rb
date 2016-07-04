@@ -46,17 +46,28 @@ RSpec.describe Readthis::Serializers do
   end
 
   describe '#rassoc' do
-    it 'inverts the current set of serializers' do
-      serializers = Readthis::Serializers.new
+    let(:serializers) { Readthis::Serializers.new }
 
+    it 'inverts the current set of serializers' do
       expect(serializers.rassoc(1)).to eq(Marshal)
     end
 
     it 'returns custom serializers' do
-      serializers = Readthis::Serializers.new
       serializers << CustomSerializer
-
       expect(serializers.rassoc(4)).to eq(CustomSerializer)
+    end
+
+    it 'inverts default serializers after adding custom one' do
+      serializers << CustomSerializer
+      expect(serializers.rassoc(1)).to eq(Marshal)
+      expect(serializers.rassoc(3)).to eq(JSON)
+    end
+
+    it 'takes into account only first 3 bytes of passed integer' do
+      expect(serializers.rassoc(1)).to eq(Marshal)
+      expect(serializers.rassoc(11)).to eq(JSON)
+      serializers << CustomSerializer
+      expect(serializers.rassoc(12)).to eq(CustomSerializer)
     end
   end
 
