@@ -22,9 +22,9 @@ RSpec.describe Readthis::Serializers do
 
     it 'prevents more than seven serializers' do
       serializers = Readthis::Serializers.new
-
+      serializers << Class.new until serializers.flags.length >= 7
       expect do
-        10.times { serializers << Class.new }
+        serializers << Class.new
       end.to raise_error(Readthis::SerializersLimitError)
     end
   end
