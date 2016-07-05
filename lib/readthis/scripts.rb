@@ -38,13 +38,19 @@ module Readthis
     end
 
     def load_script!(command, store)
-      path = File.join('script', "#{command}.lua")
+      path = abs_path("#{command}.lua")
 
       File.open(path) do |file|
         loaded[command] = store.script(:load, file.read)
       end
     rescue Errno::ENOENT
       raise Readthis::UnknownCommandError, "unknown command '#{command}'"
+    end
+
+    def abs_path(filename)
+      dir = File.expand_path(File.dirname(__FILE__))
+
+      File.join(dir, '../../script', filename)
     end
   end
 end
