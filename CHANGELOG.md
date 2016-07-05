@@ -1,3 +1,8 @@
+## v1.4.1 2016-07-05
+
+- Fixed: Require lua files relative to the `Script` file itself. This fixes
+  loading scripts from Rails or other applications.
+
 ## v1.4.0 2016-07-04
 
 - Added: `Readthis::Script`, for dynamically loading and executing lua scripts.
