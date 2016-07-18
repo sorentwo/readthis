@@ -1,4 +1,4 @@
-## v1.5.0 Unreleased
+## v1.5.0 2016-07-18
 
 - Added: `Cache#delete_matched` has been added in a resource efficient way that
   avoids using the "evil" `KEYS` command.
