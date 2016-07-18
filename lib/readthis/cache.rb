@@ -115,6 +115,49 @@ module Readthis
       end
     end
 
+    # Delete all values that match a given pattern. The pattern must be defined
+    # using Redis compliant globs. The following examples are borrowed from the
+    # `KEYS` documentation:
+    #
+    # * `h?llo` matches hello, hallo and hxllo
+    # * `h*llo` matches hllo and heeeello
+    # * `h[ae]llo` matches hello and hallo, but not hillo
+    # * `h[^e]llo` matches hallo, hbllo, ... but not hello
+    # * `h[a-b]llo` matches hallo and hbllo
+    #
+    # Note that `delete_matched` does *not* use the `KEYS` command, making it
+    # safe for use in production.
+    #
+    # @param [String] pattern The glob pattern for matching keys
+    # @option [String] :namespace Prepend a namespace to the pattern
+    # @option [Number] :count Configure the number of keys deleted at once
+    #
+    # @example Delete all 'cat' keys
+    #
+    #   cache.delete_matched('*cats') #=> 47
+    #   cache.delete_matched('*dogs') #=> 0
+    #
+    def delete_matched(pattern, options = {})
+      namespaced = namespaced_key(pattern, merged_options(options))
+
+      invoke(:delete, pattern) do |store|
+        cursor  = nil
+        count   = options.fetch(:count, 1000)
+        deleted = 0
+
+        until cursor == '0'.freeze
+          cursor, matched = store.scan(cursor || 0, match: namespaced, count: count)
+
+          if matched.any?
+            store.del(*matched)
+            deleted += matched.length
+          end
+        end
+
+        deleted
+      end
+    end
+
     # Fetches data from the cache, using the given key. If there is data in the
     # cache with the given key, then that data is returned.
     #

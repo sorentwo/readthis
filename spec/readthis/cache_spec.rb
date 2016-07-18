@@ -327,6 +327,32 @@ RSpec.describe Readthis::Cache do
     end
   end
 
+  describe '#delete_matched' do
+    it 'deletes all matching keys' do
+      cache.write('tomcat', 'cat')
+      cache.write('wildcat', 'cat')
+      cache.write('bobcat', 'cat')
+      cache.write('cougar', 'cat')
+
+      expect(cache.delete_matched('tomcat')).to eq(1)
+      expect(cache.read('tomcat')).to be_nil
+      expect(cache.read('bobcat')).not_to be_nil
+      expect(cache.read('wildcat')).not_to be_nil
+
+      expect(cache.delete_matched('*cat', count: 1)).to eq(2)
+      expect(cache.read('wildcat')).to be_nil
+      expect(cache.read('bobcat')).to be_nil
+
+      expect(cache.delete_matched('*cat')).to eq(0)
+    end
+
+    it 'respects namespacing when matching keys' do
+      cache.write('tomcat', 'cat', namespace: 'feral')
+
+      expect(cache.delete_matched('tom*', namespace: 'feral')).to eq(1)
+    end
+  end
+
   describe '#increment' do
     it 'atomically increases the stored integer' do
       cache.write('counter', 10)
