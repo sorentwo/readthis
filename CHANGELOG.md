@@ -1,3 +1,8 @@
+## v1.5.0 Unreleased
+
+- Added: `Cache#delete_matched` has been added in a resource efficient way that
+  avoids using the "evil" `KEYS` command.
+
 ## v1.4.1 2016-07-05
 
 - Fixed: Require lua files relative to the `Script` file itself. This fixes
