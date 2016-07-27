@@ -210,11 +210,22 @@ RSpec.describe Readthis::Cache do
       cache.write('a', 1)
       cache.write('b', 2)
       cache.write('c', '3')
+      cache.write('d', nil)
 
-      expect(cache.read_multi('a', 'b', 'c')).to eq(
+      expect(cache.read_multi('a', 'b', 'c', 'd')).to eq(
         'a' => 1,
         'b' => 2,
         'c' => '3'
+      )
+    end
+
+    it 'can be configured to retain keys with nil values' do
+      cache.write('a', nil)
+      cache.write('b', nil)
+
+      expect(cache.read_multi('a', 'b', retain_nils: true)).to eq(
+        'a' => nil,
+        'b' => nil
       )
     end
 

@@ -24,6 +24,7 @@ module Readthis
     # @option options [Number]  :compression_threshold (8k) Minimum string size for compression
     # @option options [Number]  :expires_in The number of seconds until an entry expires
     # @option options [Boolean] :refresh (false) Automatically refresh key expiration
+    # @option options [Boolean] :retain_nils (false) Whether nil values should be included in read_multi output
     # @option options [Module]  :marshal (Marshal) Module that responds to `dump` and `load`
     # @option options [String]  :namespace Prefix used to namespace entries
     # @option options [Number]  :pool_size (5) The number of threads in the pool
@@ -246,19 +247,20 @@ module Readthis
       end
     end
 
-    # Read multiple values at once from the cache. Options can be passed in the
-    # last argument.
+    # Efficiently read multiple values at once from the cache. Options can be
+    # passed in the last argument.
     #
     # @overload read_multi(keys)
     #   Return all values for the given keys.
     #   @param [String] One or more keys to fetch
+    #   @param [Hash] options Configuration to override
     #
     # @return [Hash] A hash mapping keys to the values found.
     #
     # @example
     #
-    #   cache.write('a', 1)
-    #   cache.read_multi('a', 'b') # => { 'a' => 1, 'b' => nil }
+    #   cache.read_multi('a', 'b') # => { 'a' => 1 }
+    #   cache.read_multi('a', 'b', retain_nils: true) # => { 'a' => 1, 'b' => nil }
     #
     def read_multi(*keys)
       options = merged_options(extract_options!(keys))
@@ -268,10 +270,15 @@ module Readthis
 
       invoke(:read_multi, keys) do |store|
         values = store.mget(*mapping).map { |value| entity.load(value) }
+        zipped = keys.zip(values)
 
         refresh_entity(mapping, store, options)
 
-        keys.zip(values).to_h
+        unless options[:retain_nils]
+          zipped.select! { |(_, value)| value }
+        end
+
+        zipped.to_h
       end
     end
 
@@ -318,9 +325,9 @@ module Readthis
     #   end
     #
     def fetch_multi(*keys)
-      results   = read_multi(*keys)
-      extracted = extract_options!(keys)
-      missing   = {}
+      options = extract_options!(keys).merge(retain_nils: true)
+      results = read_multi(*keys, options)
+      missing = {}
 
       invoke(:fetch_multi, keys) do |_store|
         results.each do |key, value|
@@ -332,7 +339,7 @@ module Readthis
         end
       end
 
-      write_multi(missing, extracted) if missing.any?
+      write_multi(missing, options) if missing.any?
 
       results
     end
