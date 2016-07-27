@@ -19,22 +19,32 @@ module Readthis
 
     # Creates a new Readthis::Cache object with the given options.
     #
-    # @option options [Hash]    :redis Options that will be passed to the redis connection
-    # @option options [Boolean] :compress (false) Enable or disable automatic compression
-    # @option options [Number]  :compression_threshold (8k) Minimum string size for compression
-    # @option options [Number]  :expires_in The number of seconds until an entry expires
-    # @option options [Boolean] :refresh (false) Automatically refresh key expiration
-    # @option options [Boolean] :retain_nils (false) Whether nil values should be included in read_multi output
-    # @option options [Module]  :marshal (Marshal) Module that responds to `dump` and `load`
-    # @option options [String]  :namespace Prefix used to namespace entries
-    # @option options [Number]  :pool_size (5) The number of threads in the pool
-    # @option options [Number]  :pool_timeout (5) How long before a thread times out
+    # @option options [Hash] :redis Options that will be passed to the redis
+    #   connection
+    # @option options [Boolean] :compress (false) Enable or disable automatic
+    #   compression
+    # @option options [Number] :compression_threshold (8k) Minimum string size
+    #   for compression
+    # @option options [Number] :expires_in The number of seconds until an entry
+    #   expires
+    # @option options [Boolean] :refresh (false) Automatically refresh key
+    #   expiration
+    # @option options [Boolean] :retain_nils (false) Whether nil values should
+    #   be included in read_multi output
+    # @option options [Module] :marshal (Marshal) Module that responds to
+    #   `dump` and `load`
+    # @option options [String] :namespace Prefix used to namespace entries
+    # @option options [Number] :pool_size (5) The number of threads in the pool
+    # @option options [Number] :pool_timeout (5) How long before a thread times
+    #   out
     #
     # @example Create a new cache instance
+    #
     #   Readthis::Cache.new(namespace: 'cache',
     #                       redis: { url: 'redis://localhost:6379/0' })
     #
     # @example Create a compressed cache instance
+    #
     #   Readthis::Cache.new(compress: true, compression_threshold: 2048)
     #
     def initialize(options = {})
@@ -270,15 +280,10 @@ module Readthis
 
       invoke(:read_multi, keys) do |store|
         values = store.mget(*mapping).map { |value| entity.load(value) }
-        zipped = keys.zip(values)
 
         refresh_entity(mapping, store, options)
 
-        unless options[:retain_nils]
-          zipped.select! { |(_, value)| value }
-        end
-
-        zipped.to_h
+        values_to_hash(keys, values, options)
       end
     end
 
@@ -431,6 +436,14 @@ module Readthis
 
     def merged_options(options)
       @options.merge(options || {})
+    end
+
+    def zipped_results(keys, values, options)
+      zipped = keys.zip(values)
+
+      zipped.select! { |(_, value)| value } unless options[:retain_nils]
+
+      zipped.to_h
     end
 
     def pool_options(options)
