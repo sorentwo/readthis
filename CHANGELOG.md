@@ -1,3 +1,25 @@
+## v2.0.0 2016-07-27
+
+- Breaking: `nil` values are now rejected from `read_multi` output by default.
+  Previously `nil` values were always preserved when fetching with `read_multi`.
+  This differed from the `ActiveSupport::Cache` base behaviour and caused bugs
+  in Rails 5.0. More details can be seen at [readthis#39][issue-49].
+
+The old fetching behaviour, with `nil` intact, can be achieved by passing the
+`retain_nils` flag:
+
+```ruby
+cache.read_multi('a', 'b', retain_nils: true)
+```
+
+This can also be set as a global option to retain backward compatibility:
+
+```ruby
+config.cache_store = :readthis_store, { retain_nils: true }
+```
+
+[issue-49]: https://github.com/sorentwo/readthis/issues/49
+
 ## v1.5.0 2016-07-18
 
 - Added: `Cache#delete_matched` has been added in a resource efficient way that
