@@ -1,3 +1,7 @@
+## v2.0.1 2016-07-27
+
+- Fixed: The 2.0.0 release had a typo that rendered it useless.
+
 ## v2.0.0 2016-07-27
 
 - Breaking: `nil` values are now rejected from `read_multi` output by default.

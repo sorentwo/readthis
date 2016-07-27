@@ -283,7 +283,7 @@ module Readthis
 
         refresh_entity(mapping, store, options)
 
-        values_to_hash(keys, values, options)
+        zipped_results(keys, values, options)
       end
     end
 
