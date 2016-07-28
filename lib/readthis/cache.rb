@@ -205,11 +205,16 @@ module Readthis
     #
     def fetch(key, options = {})
       options ||= {}
-      value = read(key, options) unless options[:force]
 
-      if value.nil? && block_given?
+      if options[:force]
         value = yield(key)
         write(key, value, options)
+      else
+        value = read(key, options)
+        if value.nil? && block_given? && !exist?(key, options)
+          value = yield(key)
+          write(key, value, options)
+        end
       end
 
       value

@@ -172,6 +172,12 @@ RSpec.describe Readthis::Cache do
       expect(cache.read('missing-key')).to eq(value)
     end
 
+    it 'skips the provided block if write nil value' do
+      cache.write('short-key', nil)
+      result = cache.fetch('short-key') { 'skip this block' }
+      expect(result).to be_nil
+    end
+
     it 'returns computed value when using passthrough marshalling' do
       cache = Readthis::Cache.new(marshal: Readthis::Passthrough)
       result = cache.fetch('missing-key') { 'value for you' }
