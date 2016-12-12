@@ -14,7 +14,7 @@ module Readthis
       when key.respond_to?(:to_param)
         key.to_param
       else
-        key
+        key.to_s
       end
     end
 

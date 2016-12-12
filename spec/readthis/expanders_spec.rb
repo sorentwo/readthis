@@ -32,5 +32,9 @@ RSpec.describe Readthis::Expanders do
 
       expect(expand(object)).to eq('thing')
     end
+
+    it 'ensures the result is a string' do
+      expect(expand(123)).to eq('123')
+    end
   end
 end
