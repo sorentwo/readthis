@@ -76,6 +76,12 @@ RSpec.describe Readthis::Cache do
 
       expect(cache.read('custom')).to eq('some-value')
     end
+
+    it 'stores russian symbols by russian key' do
+      cache.write('вгдмн', 'вгдмн')
+
+      expect(cache.read('вгдмн')).to eq('вгдмн')
+    end
   end
 
   describe '#read' do
