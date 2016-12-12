@@ -1,3 +1,13 @@
+## v2.0.2 2016-12-12
+
+- Fixed: Properly handle writing when the key and value are both UTF-8. Setting
+  both the key and value to UTF-8 strings caused differing encodings to be sent
+  to Redis. The key was UTF-8 but the value would be ASCII-8BIT, because it was
+  compressed and then packed as 8bit integers. The workaround is to force the
+  encoding of both strings to binary, something that will always be compatible.
+
+  This makes Readthis actually usable with Non-English keys.
+
 ## v2.0.1 2016-07-27
 
 - Fixed: The 2.0.0 release had a typo that rendered it useless.
