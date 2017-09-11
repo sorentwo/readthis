@@ -22,7 +22,7 @@ RSpec.describe Readthis::Cache do
       cache = Readthis::Cache.new(redis: { driver: :hiredis })
 
       cache.pool.with do |client|
-        expect(client.client.driver).to be(Redis::Connection::Hiredis)
+        expect(client._client.driver).to be(Redis::Connection::Hiredis)
       end
     end
   end
