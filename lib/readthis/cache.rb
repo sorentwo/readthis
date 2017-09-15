@@ -51,8 +51,8 @@ module Readthis
       @options = options
 
       @entity = Readthis::Entity.new(
-        marshal:   options.fetch(:marshal, Marshal),
-        compress:  options.fetch(:compress, false),
+        marshal: options.fetch(:marshal, Marshal),
+        compress: options.fetch(:compress, false),
         threshold: options.fetch(:compression_threshold, 1024)
       )
 
@@ -152,8 +152,8 @@ module Readthis
       namespaced = namespaced_key(pattern, merged_options(options))
 
       invoke(:delete, pattern) do |store|
-        cursor  = nil
-        count   = options.fetch(:count, 1000)
+        cursor = nil
+        count = options.fetch(:count, 1000)
         deleted = 0
 
         until cursor == '0'.freeze
@@ -419,7 +419,7 @@ module Readthis
 
     def instrument(name, key)
       if self.class.notifications
-        name    = "cache_#{name}.active_support"
+        name = "cache_#{name}.active_support"
         payload = { key: key, name: name }
 
         self.class.notifications.instrument(name, payload) { yield(payload) }
@@ -453,7 +453,7 @@ module Readthis
     end
 
     def pool_options(options)
-      { size:    options.fetch(:pool_size, 5),
+      { size: options.fetch(:pool_size, 5),
         timeout: options.fetch(:pool_timeout, 5) }
     end
 

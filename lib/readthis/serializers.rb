@@ -7,9 +7,9 @@ module Readthis
     # Defines the default set of three serializers: Marshal, Passthrough, and
     # JSON. With a hard limit of 7 that leaves 4 additional slots.
     BASE_SERIALIZERS = {
-      Marshal     => 0x1,
+      Marshal => 0x1,
       Passthrough => 0x2,
-      JSON        => 0x3
+      JSON => 0x3
     }.freeze
 
     # The hard serializer limit, based on the number of possible values within

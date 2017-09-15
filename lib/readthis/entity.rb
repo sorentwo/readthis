@@ -7,8 +7,8 @@ module Readthis
     # Unless they are overridden, these are the options used to load and unload
     # every value.
     DEFAULT_OPTIONS = {
-      compress:  false,
-      marshal:   Marshal,
+      compress: false,
+      marshal: Marshal,
       threshold: 8 * 1024
     }.freeze
 
@@ -55,8 +55,8 @@ module Readthis
     #   entity.dump(string, compress: false, marshal: JSON)
     #
     def dump(value, options = {})
-      compress  = with_fallback(options, :compress)
-      marshal   = with_fallback(options, :marshal)
+      compress = with_fallback(options, :compress)
+      marshal = with_fallback(options, :marshal)
       threshold = with_fallback(options, :threshold)
 
       dumped = deflate(marshal.dump(value), compress, threshold)
@@ -97,10 +97,10 @@ module Readthis
     # @example Compose an option embedded string
     #
     #   entity.compose(string, Marshal, false) => 0x1  + string
-    #   entity.compose(string, JSON, true)     => 0x10 + string
+    #   entity.compose(string, JSON, true) => 0x10 + string
     #
     def compose(value, marshal, compress)
-      flags  = serializers.assoc(marshal)
+      flags = serializers.assoc(marshal)
       flags |= COMPRESSED_FLAG if compress
 
       value.prepend([flags].pack('C'))
@@ -116,7 +116,7 @@ module Readthis
       flags = string[0].unpack('C').first
 
       if flags < 16
-        marshal  = serializers.rassoc(flags)
+        marshal = serializers.rassoc(flags)
         compress = (flags & COMPRESSED_FLAG) != 0
 
         [marshal, compress, string[1..-1]]
