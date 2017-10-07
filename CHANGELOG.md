@@ -1,3 +1,7 @@
+## v2.1.0 2017-10-07
+
+- Changed: Allow any redis client version between 3.0 and 5.0
+
 ## v2.0.2 2016-12-12
 
 - Fixed: Properly handle writing when the key and value are both UTF-8. Setting
