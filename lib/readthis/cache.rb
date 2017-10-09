@@ -374,8 +374,14 @@ module Readthis
     #
     #   cache.clear #=> 'OK'
     #
-    def clear(_options = nil)
-      invoke(:clear, '*', &:flushdb)
+    def clear(options = {})
+      invoke(:clear, '*') do |store|
+        if options[:async]
+          store.flushdb(async: true)
+        else
+          store.flushdb
+        end
+      end
     end
 
     protected
