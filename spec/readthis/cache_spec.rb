@@ -126,6 +126,22 @@ RSpec.describe Readthis::Cache do
     end
   end
 
+  describe '#clear' do
+    it 'clear all values in the cache with sync flushdb' do
+      cache.write('some-key', 'some-value')
+      cache.clear
+
+      expect(cache.read('some-key')).to be_nil
+    end
+
+    it 'clear all values in the cache with async flushdb' do
+      cache.write('some-key', 'some-value')
+      cache.clear(async: true)
+
+      expect(cache.read('some-key')).to be_nil
+    end
+  end
+
   describe 'compression' do
     it 'roundtrips entries when compression is enabled' do
       com_cache = Readthis::Cache.new(compress: true, compression_threshold: 8)
