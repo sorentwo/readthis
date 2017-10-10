@@ -368,7 +368,8 @@ module Readthis
     # Clear the entire cache. This flushes the current database, no
     # globbing is applied.
     #
-    # @param [Hash] _options Options, only present for compatibility
+    # @param [Hash] options Options
+    # @option :async [Boolean] clear entire cache asynchronously
     #
     # @example
     #
