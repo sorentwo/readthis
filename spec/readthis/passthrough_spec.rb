@@ -12,5 +12,11 @@ RSpec.describe Readthis::Passthrough do
       expect(Readthis::Passthrough.dump(value)).to eq(value)
       expect(Readthis::Passthrough.dump(value)).not_to be(value)
     end
+
+    it 'stringifies all objects' do
+      expect(Readthis::Passthrough.dump(1)).to eq('1')
+      expect(Readthis::Passthrough.dump(1.0)).to eq('1.0')
+      expect(Readthis::Passthrough.dump({})).to eq('{}')
+    end
   end
 end

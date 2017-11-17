@@ -3,7 +3,10 @@
 module Readthis
   module Passthrough
     def self.dump(value)
-      value.dup
+      case value
+      when String then value.dup
+      else value.to_s
+      end
     end
 
     def self.load(value)
