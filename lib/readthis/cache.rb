@@ -434,7 +434,7 @@ module Readthis
       options.fetch(:expires_in) do
         ttl = store.ttl(key)
 
-        ttl.positive? ? ttl : nil
+        ttl > 0 ? ttl : nil
       end
     end
 

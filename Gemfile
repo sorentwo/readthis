@@ -9,8 +9,8 @@ gem 'yard', require: false
 group :benchmarking do
   gem 'benchmark-ips'
   gem 'dalli'
-  gem 'oj'
   gem 'msgpack'
+  gem 'oj'
   gem 'redis-activesupport'
   gem 'stackprof'
 end

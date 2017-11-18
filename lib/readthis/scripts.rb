@@ -48,7 +48,7 @@ module Readthis
     end
 
     def abs_path(filename)
-      dir = File.expand_path(File.dirname(__FILE__))
+      dir = File.expand_path(__dir__)
 
       File.join(dir, '../../script', filename)
     end

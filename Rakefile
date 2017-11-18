@@ -22,4 +22,4 @@ rescue LoadError
   puts 'yard not loaded'
 end
 
-task default: [:rubocop, :spec]
+task default: %i[rubocop spec]

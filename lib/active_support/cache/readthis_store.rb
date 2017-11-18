@@ -5,6 +5,6 @@ module ActiveSupport
   # the ActiveSupport `cache_store` is set to `:readthis_store` it will resolve
   # to `Readthis::Cache`.
   module Cache
-    ReadthisStore ||= Readthis::Cache # rubocop:disable Style/ConstantName
+    ReadthisStore ||= Readthis::Cache # rubocop:disable Naming/ConstantName
   end
 end

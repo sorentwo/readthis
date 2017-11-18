@@ -7,13 +7,17 @@ AllCops:
     - 'pkg/**/*'
     - 'tmp/**/*'
     - 'vendor/**/*'
-  TargetRubyVersion: 2.3
+  TargetRubyVersion: 2.2
 
-Style/FrozenStringLiteralComment:
-  Enabled: false
+Documentation:
+  Enabled: false # TODO: Enable again once we have more docs
 
 Metrics/LineLength:
   Max: 100
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
 
 Metrics/ClassLength:
   Max: 200
@@ -21,10 +25,15 @@ Metrics/ClassLength:
 Metrics/MethodLength:
   Max: 15
 
-Documentation:
-  Enabled: false # TODO: Enable again once we have more docs
+Naming/FileName:
+  Exclude:
+    - 'Gemfile'
+    - 'Rakefile'
 
 Style/EmptyCaseCondition:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
   Enabled: false
 
 Style/PercentLiteralDelimiters:
