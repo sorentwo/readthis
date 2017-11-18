@@ -218,7 +218,18 @@ module Readthis
     # Increment a key in the store.
     #
     # If the key doesn't exist it will be initialized at 0. If the key exists
-    # but it isn't a Fixnum it will be initialized at 0.
+    # but it isn't a Fixnum it will be coerced to 0.
+    #
+    # Note that this method does *not* use Redis' native `incr` or `incrby`
+    # commands. Those commands only work with number-like strings, and are
+    # incompatible with the encoded values Readthis writes to the store. The
+    # behavior of `incrby` is preserved as much as possible, but incrementing
+    # is not an atomic action. If multiple clients are incrementing the same
+    # key there will be a "last write wins" race condition, causing incorrect
+    # counts.
+    #
+    # If you absolutely require correct counts it is better to use the Redis
+    # client directly.
     #
     # @param [String] key Key for lookup
     # @param [Fixnum] amount Value to increment by
@@ -226,20 +237,20 @@ module Readthis
     #
     # @example
     #
-    #   cache.increment('counter') # => 0
     #   cache.increment('counter') # => 1
     #   cache.increment('counter', 2) # => 3
     #
     def increment(key, amount = 1, options = {})
-      invoke(:increment, key) do |_store|
-        alter(key, amount, options)
+      invoke(:increment, key) do |store|
+        alter(store, key, amount, options)
       end
     end
 
     # Decrement a key in the store.
     #
     # If the key doesn't exist it will be initialized at 0. If the key exists
-    # but it isn't a Fixnum it will be initialized at 0.
+    # but it isn't a Fixnum it will be coerced to 0. Like `increment`, this
+    # does not make use of the native `decr` or `decrby` commands.
     #
     # @param [String] key Key for lookup
     # @param [Fixnum] amount Value to decrement by
@@ -252,8 +263,8 @@ module Readthis
     #   cache.decrement('counter', 2) # => 17
     #
     def decrement(key, amount = 1, options = {})
-      invoke(:decrement, key) do |_store|
-        alter(key, amount * -1, options)
+      invoke(:decrement, key) do |store|
+        alter(store, key, -amount, options)
       end
     end
 
@@ -401,10 +412,30 @@ module Readthis
 
     private
 
-    def alter(key, amount, options)
-      delta = read(key, options).to_i + amount
-      write(key, delta, options)
-      delta
+    def alter(store, key, amount, options)
+      options = merged_options(options)
+      namespaced = namespaced_key(key, options)
+
+      loaded = entity.load(store.get(namespaced))
+      change = loaded.to_i + amount
+      dumped = entity.dump(change, options)
+      expiration = fallback_expiration(store, namespaced, options)
+
+      if expiration
+        store.setex(namespaced, coerce_expiration(expiration), dumped)
+      else
+        store.set(namespaced, dumped)
+      end
+
+      change
+    end
+
+    def fallback_expiration(store, key, options)
+      options.fetch(:expires_in) do
+        ttl = store.ttl(key)
+
+        ttl.positive? ? ttl : nil
+      end
     end
 
     def coerce_expiration(expires_in)

@@ -1,3 +1,11 @@
+## Unreleased
+
+- Fixed: Preserve existing expiration value when incrementing or decrementing
+  keys. There is also additional documentation about the non-atomicity of the
+  increment and decrement methods. See [readthis#59][issue-59] for discussion.
+
+[issue-59]: https://github.com/sorentwo/readthis/issues/59
+
 ## v2.1.0 2017-10-07
 
 - Changed: Allow any redis client version between 3.0 and 5.0

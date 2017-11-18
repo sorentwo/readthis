@@ -371,25 +371,52 @@ RSpec.describe Readthis::Cache do
   end
 
   describe '#increment' do
+    it 'increments encoded values' do
+      cache.write('counter', 42, marshal: Readthis::Passthrough)
+      expect(cache.increment('counter')).to eq(43)
+    end
+
     it 'atomically increases the stored integer' do
-      cache.write('counter', 10)
-      expect(cache.increment('counter')).to eq(11)
-      expect(cache.read('counter')).to eq(11)
+      expect(cache.increment('counter')).to eq(1)
+      expect(cache.increment('counter')).to eq(2)
+      expect(cache.increment('counter', 2)).to eq(4)
     end
 
     it 'defaults a missing key to 1' do
-      expect(cache.increment('unknown')).to eq(1)
+      expect(cache.increment('counter')).to eq(1)
+    end
+
+    it 'preserves the TTL' do
+      cache.increment('counter', 1, expires_in: 999)
+      expect(cache).to have_ttl('counter' => 999)
+
+      cache.increment('counter')
+      expect(cache).to have_ttl('counter' => 999)
     end
   end
 
   describe '#decrement' do
+    it 'decrements encoded values' do
+      cache.write('counter', 42, marshal: Readthis::Passthrough)
+      expect(cache.decrement('counter')).to eq(41)
+    end
+
     it 'decrements a stored integer' do
-      cache.write('counter', 20)
-      expect(cache.decrement('counter')).to eq(19)
+      expect(cache.decrement('counter')).to eq(-1)
+      expect(cache.decrement('counter')).to eq(-2)
+      expect(cache.decrement('counter', 2)).to eq(-4)
     end
 
     it 'defaults a missing key to -1' do
       expect(cache.decrement('unknown')).to eq(-1)
+    end
+
+    it 'preserves the TTL' do
+      cache.decrement('counter', 1, expires_in: 999)
+      expect(cache).to have_ttl('counter' => 999)
+
+      cache.decrement('counter')
+      expect(cache).to have_ttl('counter' => 999)
     end
   end
 
