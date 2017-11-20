@@ -1,9 +1,9 @@
 RSpec.describe Readthis::Expanders do
-  def expand(key, namespace = nil)
-    Readthis::Expanders.namespace_key(key, namespace)
-  end
+  describe '.namespace_key' do
+    def expand(key, namespace = nil)
+      Readthis::Expanders.namespace_key(key, namespace)
+    end
 
-  describe '#expand' do
     it 'namespaces a plain string' do
       expect(expand('thing', 'space')).to eq('space:thing')
     end
@@ -44,6 +44,10 @@ RSpec.describe Readthis::Expanders do
       expect(expanded).to eq(key)
       expect(expanded).not_to be_frozen
       expect(expanded).not_to be(key)
+    end
+
+    it 'ensures the output is binary encoded' do
+      expect(expand('søren', 't∑o')).to eq('t∑o:søren'.force_encoding(Encoding::BINARY))
     end
   end
 end

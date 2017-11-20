@@ -400,8 +400,8 @@ module Readthis
     end
 
     def write_entity(key, value, store, options)
-      namespaced = encode(namespaced_key(key, options))
-      dumped = encode(entity.dump(value, options))
+      namespaced = namespaced_key(key, options)
+      dumped = entity.dump(value, options)
 
       if (expiration = options[:expires_in])
         store.setex(namespaced, coerce_expiration(expiration), dumped)
@@ -440,12 +440,6 @@ module Readthis
 
     def coerce_expiration(expires_in)
       Float(expires_in).ceil
-    end
-
-    def encode(string)
-      string = string.frozen? ? string.dup : string
-
-      string.force_encoding(Encoding::BINARY)
     end
 
     def instrument(name, key)

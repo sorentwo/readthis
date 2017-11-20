@@ -9,6 +9,13 @@ RSpec.describe Readthis::Entity do
       expect(entity.dump(string)).to include(Marshal.dump(string))
     end
 
+    it 'encodes all data as binary' do
+      string = 'søren'
+      entity = Readthis::Entity.new(marshal: Readthis::Passthrough)
+
+      expect(entity.dump(string)).to include(%(s\xC3\xB8ren))
+    end
+
     it 'marshals using a custom marshaller' do
       string = 'some string'
       entity = Readthis::Entity.new(marshal: JSON)

@@ -27,7 +27,7 @@ module Readthis
         "#{namespace}:#{expanded}"
       else
         expanded
-      end
+      end.force_encoding(Encoding::BINARY)
     end
   end
 end

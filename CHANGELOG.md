@@ -3,6 +3,8 @@
 - Fixed: Preserve existing expiration value when incrementing or decrementing
   keys. There is also additional documentation about the non-atomicity of the
   increment and decrement methods. See [readthis#59][issue-59] for discussion.
+- Fixed: Uniformly force key encodings to binary. Not all methods forced
+  encoding of the key, which would cause incomatible encoding errors.
 - Changed: Automatically duplicate frozen strings when expanding keys.
 
 [issue-59]: https://github.com/sorentwo/readthis/issues/59
