@@ -36,5 +36,14 @@ RSpec.describe Readthis::Expanders do
     it 'ensures the result is a string' do
       expect(expand(123)).to eq('123')
     end
+
+    it 'duplicates frozen strings' do
+      key = 'thing'.freeze
+      expanded = expand(key)
+
+      expect(expanded).to eq(key)
+      expect(expanded).not_to be_frozen
+      expect(expanded).not_to be(key)
+    end
   end
 end
