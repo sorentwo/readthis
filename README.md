@@ -8,7 +8,7 @@
 
 Readthis is a Redis backed cache client for Ruby. It is a drop in replacement
 for any `ActiveSupport` compliant cache and can also be used for [session
-storage](#session-storage).  Above all Readthis emphasizes performance,
+storage](#session-storage). Above all Readthis emphasizes performance,
 simplicity, and explicitness.
 
 For new projects there isn't any reason to stick with Memcached. Redis is as

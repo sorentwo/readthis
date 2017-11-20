@@ -8,6 +8,9 @@ require 'redis'
 require 'connection_pool'
 
 module Readthis
+  # Readthis is a Redis backed cache client. It is a drop in replacement for
+  # any `ActiveSupport` compliant cache Above all Readthis emphasizes
+  # performance, simplicity, and explicitness.
   class Cache
     attr_reader :entity, :notifications, :options, :pool, :scripts
 
