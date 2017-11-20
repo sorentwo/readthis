@@ -7,7 +7,7 @@ AllCops:
     - 'pkg/**/*'
     - 'tmp/**/*'
     - 'vendor/**/*'
-  TargetRubyVersion: 2.2
+  TargetRubyVersion: 2.3
 
 Documentation:
   Enabled: false # TODO: Enable again once we have more docs
@@ -34,6 +34,14 @@ Style/EmptyCaseCondition:
   Enabled: false
 
 Style/FrozenStringLiteralComment:
+  Exclude:
+    - 'Gemfile'
+    - 'Rakefile'
+    - 'lib/readthis/expanders.rb'
+    - 'spec/**/*'
+
+# Numeric predicates are incompatible with Ruby < 2.3
+Style/NumericPredicate:
   Enabled: false
 
 Style/PercentLiteralDelimiters:

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Readthis
   # This is the base error that all other specific errors inherit from,
   # making it possible to rescue the `ReadthisError` superclass.

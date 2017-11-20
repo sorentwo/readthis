@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'readthis/cache'
 require 'readthis/errors'
 require 'readthis/serializers'

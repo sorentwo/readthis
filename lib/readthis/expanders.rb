@@ -1,5 +1,6 @@
 module Readthis
   module Expanders
+    # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
     def self.expand_key(key)
       case
       when key.is_a?(String)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Readthis
   # The `Scripts` class is used to conveniently execute lua scripts. The first
   # time a command is run it is stored on the server and subsequently referred

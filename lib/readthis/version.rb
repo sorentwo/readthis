@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Readthis
-  VERSION = '2.1.0'.freeze
+  VERSION = '2.1.0'
 end

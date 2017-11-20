@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'readthis/entity'
 require 'readthis/expanders'
 require 'readthis/passthrough'
@@ -156,7 +158,7 @@ module Readthis
         count = options.fetch(:count, 1000)
         deleted = 0
 
-        until cursor == '0'.freeze
+        until cursor == '0'
           cursor, matched = store.scan(cursor || 0, match: namespaced, count: count)
 
           if matched.any?
