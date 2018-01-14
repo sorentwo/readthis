@@ -1,5 +1,7 @@
-## Unreleased
+## v2.2.0 2018-01-14
 
+- Added: `Cache#clear` now supports `async`, available on Redis 4.0+
+- Added: Documentation for serializers and expanders
 - Fixed: Preserve existing expiration value when incrementing or decrementing
   keys. There is also additional documentation about the non-atomicity of the
   increment and decrement methods. See [readthis#59][issue-59] for discussion.
