@@ -13,8 +13,7 @@ Gem::Specification.new do |spec|
   spec.homepage = 'https://github.com/sorentwo/readthis'
   spec.license = 'MIT'
 
-  spec.files = `git ls-files lib spec script README.md`.split("\x0")
-  spec.test_files = spec.files.grep(%r{^(spec)/})
+  spec.files = `git ls-files -z readthis.gemspec lib script README.md LICENSE.txt`.split("\x0")
   spec.require_paths = ['lib']
 
   spec.add_dependency 'connection_pool', '~> 2.1'
