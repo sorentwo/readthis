@@ -381,14 +381,18 @@ module Readthis
       end
     end
 
-    # Clear the entire cache. This flushes the current database, no
-    # globbing is applied.
+    # Clear the entire cache by flushing the current database.
     #
-    # @param [Hash] _options Options, only present for compatibility
+    # This flushes everything in the current database, with no globbing
+    # applied. Data in other numbered databases will be preserved.
+    #
+    # @option options [Hash] :async Flush the database asynchronously, only
+    #   supported in Redis 4.0+
     #
     # @example
     #
     #   cache.clear #=> 'OK'
+    #   cache.clear(async: true) #=> 'OK'
     #
     def clear(options = {})
       invoke(:clear, '*') do |store|
