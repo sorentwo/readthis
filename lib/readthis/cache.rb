@@ -472,7 +472,7 @@ module Readthis
       instrument(operation, key) do
         pool.with(&block)
       end
-    rescue Redis::BaseError => error
+    rescue Redis::BaseError, Errno::EADDRNOTAVAIL => error
       raise error unless Readthis.fault_tolerant?
     end
 

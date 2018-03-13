@@ -225,6 +225,16 @@ RSpec.describe Readthis::Cache do
 
       expect(computed).to eq('computed')
     end
+
+    it 'serves computed content when the cache is not available and tolerance is enabled' do
+      Readthis.fault_tolerant = true
+
+      allow(cache.pool).to receive(:with).and_raise(Errno::EADDRNOTAVAIL)
+
+      computed = cache.fetch('error-key') { 'computed' }
+
+      expect(computed).to eq('computed')
+    end
   end
 
   describe '#read_multi' do
