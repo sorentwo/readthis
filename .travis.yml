@@ -1,14 +1,9 @@
 sudo: false
 language: ruby
 rvm:
-  - 2.2.9
-  - 2.3.6
-  - 2.4.3
-  - 2.5.0
-  - ruby-head
-matrix:
-  allow_failures:
-    - rvm: ruby-head
+  - 2.4.6
+  - 2.5.5
+  - 2.6.3
 services:
   - redis-server
 script: bundle exec rspec
