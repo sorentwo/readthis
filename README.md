@@ -17,6 +17,18 @@ elsewhere in the stack. See [this blog post][hp-caching] for more details.
 
 [hp-caching]: http://sorentwo.com/2015/07/20/high-performance-caching-with-readthis.html
 
+## Rails 5.2+
+
+Rails 5.2 and beyond has a [Redis Cache][rc] built in. The built in Redis cache
+supports many of the same features as Readthis, as well as multi-tier caches and
+newer additions like cache key recycling.
+
+_Readthis is maintained for versions of Rails prior to 5.2 and new features will
+not be supported. If you are using Rails 5.2+ you should migrate to the built in
+Redis cache._
+
+[rc]: https://api.rubyonrails.org/classes/ActiveSupport/Cache/RedisCacheStore.html
+
 ## Footprint & Performance
 
 See [Performance](PERFORMANCE.md)
